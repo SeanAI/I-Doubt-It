@@ -17,7 +17,7 @@
 //
 //    nice ./ccgRunSim
 //
-// Each submitted agent will play each other, batting first and batting
+// Each submitted agent will play each other, batting first and bat
 // second an equal number of times, to determine the standings, which will
 // be posted soon after the agents are due.
 

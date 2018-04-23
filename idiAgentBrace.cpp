@@ -17,7 +17,7 @@
 //
 //    nice ./ccgRunSim
 //
-// Each submitted agent will play each other, batting first and batting
+// Each submitted agent will play each other, batting first and bat
 // second an equal number of times, to determine the standings, which will
 // be posted soon after the agents are due.
 
@@ -26,7 +26,7 @@
 #include "iostream"
 
 // Rename and complete this agent function.
-Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentBrace(Hand hand, Play lastPlay, const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -37,6 +37,7 @@ Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchSt
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
 
+   cout << "\njfkalsd;jf;la\n";
    Play myPlay;
    vector<Card> discards;
    myPlay.setCardsPlayed(2, discards, false);

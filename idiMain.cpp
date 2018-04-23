@@ -7,18 +7,16 @@
 #include "idi.h"
 
 extern const int numAgents;
-extern int (*agentFunc[])(Hand, Card, bool, const MatchState &);
+extern int (*agentFunc[])(Hand, Play, bool, const MatchState &);
 extern string agentStr[];
 
-MatchState playIDICardGameMatch(int (*agentA)(Hand, Card, bool, const MatchState &), int (*agentB)(Hand, Card, bool, const MatchState &), int (*agentC)(Hand, Card, bool, const MatchState &), bool printAllDetails);
+MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState &), int (*agentB)(Hand, Play, bool, const MatchState &), int (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails);
 
 int main()
 {
-   // poop
    IDIStats playerStats[numAgents];
-   // int i, j, k, numLosses[numAgents], numWins[numAgents], 
-   int numLosses[numAgents], numWins[numAgents], 
-   order[numAgents], temp;
+   int i, numLosses[numAgents], numWins[numAgents], k, j, l,
+   order[numAgents];//, temp;
    MatchState match;
 
    srandom(time(0));
@@ -29,10 +27,23 @@ int main()
    {
       numWins[i] = 0;
       numLosses[i] = 0;
-
+   }
+   for (i = 0; i < numAgents; i += 1)
+   {
+      for (j = 0; j < numAgents; j += 1)
+      {
+		  for (l = 0; l < numAgents; l += 1)
+		  {
+			for (k = 0; k <= 200; k += 1)
+			{
+				match = playIDICardGameMatch(agentFunc[i], agentFunc[j], agentFunc[l], k == 0);
+			}
+		  }
+	  }
    }
    
-   /*for (i = 0; i < numAgents; i += 1)
+   /*
+   for (i = 0; i < numAgents; i += 1)
    {
       for (j = 0; j < numAgents; j += 1)
       {
@@ -132,46 +143,75 @@ int main()
         << "Overall standings:                                    points          batting         bowling\n"
         << "                    points     W     L     D     T  as A  as B      R/W     R/hB    R/W     B/W\n";
    cout << fixed;
-   for (i = 0; i < numAgents; i += 1)
+   /*for (i = 0; i < numAgents; i += 1)
    {
       cout << setw(20) << left << agentStr[order[i]]
            << " " << setw(5) << right << numWins[order[i]]
            << " " << setw(5) << right << numLosses[order[i]]
            << " " << setprecision(2) << setw(7) << right << playerStats[order[i]].bluffs << "\n";
-   }
+   } */
    return 0;
 }
 
-MatchState playIDICardGameMatch(int (*agentA)(Hand, Card, bool, const MatchState &), int (*agentB)(Hand, Card, bool, const MatchState &), int (*agentC)(Hand, Card, bool, const MatchState &), bool printAllDetails)
+MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState &), int (*agentB)(Hand, Play, bool, const MatchState &), int (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails)
 {
    // Play a match of the cricket card game between given agents.
-   Card battingCard, bowlingCard;
    Hand hand1, hand2, hand3, tempHand, discardPile;
-   // int battingPlay, bowlingPlay, lastBowlingCardNumber;
-   int (*agent1)(Hand, Card, bool, const MatchState &);
-   int (*agent2)(Hand, Card, bool, const MatchState &);
-   int (*agent3)(Hand, Card, bool, const MatchState &);
+   Deck startingDeck;
+   //int battingPlay, bowlingPlay, lastBowlingCardNumber;
+   //int (*agent1)(Hand, Card, bool, const MatchState &);
+   //int (*agent2)(Hand, Card, bool, const MatchState &);
+   //int (*agent3)(Hand, Card, bool, const MatchState &);
    MatchState match;
-   agent1 = agentA;
-   agent2 = agentB;
-   agent3 = agentC;
+
+   //agent1 = agentA;
+   //agent2 = agentB;
+   //agent3 = agentC;
    
+   
+   startingDeck.build();
+   startingDeck.shuffle();
+   int iter = 0;
+   while(startingDeck.getDeckSize() > 1)
+   {
+	   if(iter == 3)
+	   {
+		   iter = 0;
+	   }
+	   switch(iter)
+	   {
+			case 0:
+				hand1.addCard(startingDeck.deal());
+				iter++;
+				break;
+			case 1:
+				hand2.addCard(startingDeck.deal());
+				iter++;
+				break;
+			case 2:
+				hand3.addCard(startingDeck.deal());
+				iter++;
+				break;
+	   }
+   }
    while (match.stillPlaying())
    {
       if (printAllDetails)
       {
-             cout << "A's hand: " << hand1.toString() << "\n"
-              << "B's hand: " << hand2.toString() << "\n"
-              << "C's hand: " << hand3.toString() << "\n";
+         cout << "A's hand: " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
+              << "B's hand: " << hand2.toString() << " Hand Size: " << hand2.getHandSize() << "\n"
+              << "C's hand: " << hand3.toString() << " Hand Size: " << hand3.getHandSize() << "\n";
       }
       /*lastBowlingCardNumber = bowlingCard.getNumber();
       bowlingPlay = (*bowlingAgent)(bowlingHand, bowlingCard, false, match);
       bowlingCard = bowlingHand.getCard(bowlingPlay);
-      if (printAllDetails)
+      
+	  if (printAllDetails)
       {
          cout << "      " << (match.isInFirstInnings() ? "B" : "A")
               << " claims they have " << bowlingCard.toString() << "; ";
       }
+	  /*
       if (bowlingCard.getNumber() == lastBowlingCardNumber)
       {
          match.scoreRuns(1);

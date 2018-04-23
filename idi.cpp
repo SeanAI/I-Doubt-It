@@ -5,6 +5,20 @@
 
 #include "idi.h"
 
+/*
+   functions included:
+      Card::Card
+      Hand::Hand
+      Hand::randomInt
+      Play::Play
+      MatchState::checkForResult
+      
+*/
+
+Card::Card() {
+   makeCard(0, spades);
+}
+
 int Card::randomInt(int n)
 {
    // Return a random integer between 0 and n - 1.
@@ -29,31 +43,33 @@ string Card::toString() const
    switch (suit)
    {
       case spades:
-         strstr << "$]";
+         strstr << "Spades]";
          break;
       case clubs:
-         strstr << "@]";
+         strstr << "Clubs]";
          break;
       case hearts:
-         strstr << "!]";
+         strstr << "Hearts]";
          break;
       case diamonds:
-         strstr << "*]";
+         strstr << "Diamonds]";
          break;
    }
    return strstr.str();
 }
 
 Hand::Hand()
-{   
+{
+   cout << "\nIN HAND()\n";
 }
 
 string Hand::toString() const
 {
    // Convert a hand of cards to a convenient string representation.
-   int whichCard;
+   int whichCard, size;
    string str;
-   for (whichCard = 0; whichCard < cards.size(); whichCard += 1)
+   size = cards.size();
+   for (whichCard = 0; whichCard < size; whichCard += 1)
    {
       str += cards[whichCard].toString();
    }

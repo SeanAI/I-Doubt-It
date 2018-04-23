@@ -4,7 +4,7 @@
 # Agent Challenge 4: Cricket card game
 
 challenge='idi'
-funcSignature='int _(Hand, Card, bool, const MatchState &)'
+funcSignature='int _(Hand, Play, const MatchState &)'
 funcNames=''
 objectFiles=''
 declare -i numAgents

@@ -37,6 +37,7 @@ Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchSt
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
 
+   cout << "\njfkalsd;jf;la\n";
    Play myPlay;
    vector<Card> discards;
    myPlay.setCardsPlayed(2, discards, false);

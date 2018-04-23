@@ -76,7 +76,24 @@ class Deck
 			}
 		}
 	}
-	void shuffle() 
+   
+   void removeCard(int n, Deck &cards) {
+      cards.erase(deckOCards.begin() + n);
+   }
+   
+   Card deal() {
+      int n;
+      Card card;
+      
+      n = random() % deckOCards.size();
+      
+      card = deckOCards[n];
+      removeCard(n);
+      
+      return card;
+   }
+   
+	void shuffle()
 	{
 		Card temp;
 		int randomInt(52);
@@ -97,6 +114,27 @@ private:
    vector<Card> cards;
 public:
    Hand();
+	void buildHand()
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			for(int j = 1; j < 14; j++)
+			{
+				switch(i)
+				{
+					// case 0: cards.push_back(Card(j, spades));
+					case 0: cards.push_back());
+							break;
+					case 1: cards.push_back(Card(j, clubs));
+							break;
+					case 2: cards.push_back(Card(j, hearts));
+							break;
+					case 3: cards.push_back(Card(j, diamonds));
+							break;
+				}
+			}
+		}
+	}
    Card getCard(uint which) const 
    {
       Card errorCard;
@@ -125,7 +163,9 @@ class Play
    bool claimBluff;
    
    public:
-      Play();
+      Play() {
+         cout << "\nHELLO THERE\n";
+      }
       void setCardsPlayed(int num, vector<Card> dis, bool dou)
       {
          numOfCardsPlayed = num;
@@ -157,7 +197,5 @@ public:
    MatchState();
    bool stillPlaying() const {return result == unfinished;}
 };
-
-int numRuns(int cardDifference);
 
 #endif // #ifndef CCG_H

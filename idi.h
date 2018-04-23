@@ -77,20 +77,20 @@ class Deck
 		}
 	}
    
-   void removeCard(int n, Deck &cards) {
-      cards.erase(deckOCards.begin() + n);
+   // void removeCard(int n, vector<Card> &cards) {
+   void removeCard(int n) {
+      deckOCards.erase(deckOCards.begin() + n);
    }
    
-   Card deal() {
+   void deal(vector<Card> &player) {
       int n;
-      Card card;
       
       n = random() % deckOCards.size();
       
-      card = deckOCards[n];
+      // card = deckOCards[n];
+      player.push_back(deckOCards[n]);
+      // removeCard(n, deckOCards);
       removeCard(n);
-      
-      return card;
    }
    
 	void shuffle()
@@ -114,27 +114,7 @@ private:
    vector<Card> cards;
 public:
    Hand();
-	void buildHand()
-	{
-		for(int i = 0; i < 4; i++)
-		{
-			for(int j = 1; j < 14; j++)
-			{
-				switch(i)
-				{
-					// case 0: cards.push_back(Card(j, spades));
-					case 0: cards.push_back());
-							break;
-					case 1: cards.push_back(Card(j, clubs));
-							break;
-					case 2: cards.push_back(Card(j, hearts));
-							break;
-					case 3: cards.push_back(Card(j, diamonds));
-							break;
-				}
-			}
-		}
-	}
+   
    Card getCard(uint which) const 
    {
       Card errorCard;
@@ -143,6 +123,15 @@ public:
       else
          return errorCard;
    }
+   
+   void removeCard(int n) {
+      cards.erase(cards.begin() + n);
+   }
+   
+   void addCard(Card add) {
+      cards.push_back(add);
+   }
+   
    string toString() const;
 };
 
@@ -189,11 +178,12 @@ class Play
 // Keeps track of one match.
 class MatchState
 {
-private:
+   private:
    IDIStats stats[3];
    matchResult result;
    void checkForResult();
-public:
+   
+   public:
    MatchState();
    bool stillPlaying() const {return result == unfinished;}
 };

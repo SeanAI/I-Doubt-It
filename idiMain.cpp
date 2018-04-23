@@ -14,6 +14,7 @@ MatchState playIDICardGameMatch(int (*agentA)(Hand, Card, bool, const MatchState
 
 int main()
 {
+   // poop
    IDIStats playerStats[numAgents];
    // int i, j, k, numLosses[numAgents], numWins[numAgents], 
    int numLosses[numAgents], numWins[numAgents], 

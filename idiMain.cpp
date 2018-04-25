@@ -191,16 +191,16 @@ int main()
       }
    } */
    cout << "\n\n"
-        << "Overall standings:                                    points          batting         bowling\n"
-        << "                    points     W     L     D     T  as A  as B      R/W     R/hB    R/W     B/W\n";
+        << "Overall standings:                              \n"
+        << "                         W     L     Bluffs\n";
    cout << fixed;
-   /*for (i = 0; i < numAgents; i += 1)
+   for (i = 0; i < numAgents; i += 1)
    {
-      cout << setw(20) << left << agentStr[order[i]]
-           << " " << setw(5) << right << numWins[order[i]]
-           << " " << setw(5) << right << numLosses[order[i]]
-           << " " << setprecision(2) << setw(7) << right << playerStats[order[i]].bluffs << "\n";
-   } */
+      cout << setw(20) << left << agentStr[i]
+           << " " << setw(5) << right << numWins[i]
+           << " " << setw(5) << right << numLosses[i]
+           << " " << setprecision(2) << setw(5) << right << playerStats[i].bluffs << "\n";
+   } 
    return 0;
 }
 

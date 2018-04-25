@@ -7,10 +7,10 @@
 #include "idi.h"
 
 extern const int numAgents;
-extern int (*agentFunc[])(Hand, Play, bool, const MatchState &);
+extern Play (*agentFunc[])(Hand, Play, bool, const MatchState &);
 extern string agentStr[];
 
-MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState &), int (*agentB)(Hand, Play, bool, const MatchState &), int (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails);
+MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, bool, const MatchState &), Play (*agentB)(Hand, Play, bool, const MatchState &), Play (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails);
 
 int main()
 {
@@ -28,19 +28,70 @@ int main()
       numWins[i] = 0;
       numLosses[i] = 0;
    }
-   for (i = 0; i < numAgents; i += 1)
+   i = 0;
+   j = 1;
+   l = 2;
+   
+   for (k = 0; k <= 5; k += 1)
    {
-      for (j = 0; j < numAgents; j += 1)
+      cout << "\n"
+           << "A = " << agentStr[i] << ", B = " << agentStr[j] << ", C = " << agentStr[l] << ":"
+           << "\n"
+           << "Exhibition match:\n" << flush;
+      match = playIDICardGameMatch(agentFunc[i], agentFunc[j], agentFunc[l], k == 0);
+      switch (match.getResult())
       {
-		  for (l = 0; l < numAgents; l += 1)
-		  {
-			for (k = 0; k <= 200; k += 1)
-			{
-				match = playIDICardGameMatch(agentFunc[i], agentFunc[j], agentFunc[l], k == 0);
-			}
-		  }
-	  }
+         case aWin:
+            cout << "   >>> A wins <<<\n";
+            break;
+         case bWin:
+            cout << "   >>> B wins <<<\n";
+            break;
+         case cWin:
+            cout << "   >>> C wins <<<\n";
+            break;
+      }
+      if (k == 0)
+      {
+         cout << "Official matches:\n";
+      }
+         else
+         {
+            switch (match.getResult())
+            {
+               case aWin:
+                  numWins[i] += 1;
+                  numLosses[j] += 1;
+                  numLosses[l] += 1;
+                  break;
+               case bWin:
+                  numWins[j] += 1;
+                  numLosses[i] += 1;
+                  numLosses[l] += 1;
+                  break;
+               case cWin:
+                   numWins[l] += 1;
+                  numLosses[j] += 1;
+                  numLosses[i] += 1;
+                  break;
+            }
+         }
+            /*IDIStats[i].runs += match.getRuns(0);
+            IDIStats[i].wickets += match.getWickets(0);
+            IDIStats[i].balls += match.getBalls(0);
+            IDIStats[i].runs += match.getRuns(1);
+            IDIStats[i].wickets += match.getWickets(1);
+            IDIStats[i].balls += match.getBalls(1);
+            IDIStats[j].runs += match.getRuns(1);
+            IDIStats[j].wickets += match.getWickets(1);
+            IDIStats[j].balls += match.getBalls(1);
+            IDIStats[j].runs += match.getRuns(0);
+            IDIStats[j].wickets += match.getWickets(0);
+            IDIStats[j].balls += match.getBalls(0);
+            */
+     
    }
+
    
    /*
    for (i = 0; i < numAgents; i += 1)
@@ -153,25 +204,27 @@ int main()
    return 0;
 }
 
-MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState &), int (*agentB)(Hand, Play, bool, const MatchState &), int (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails)
+MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, bool, const MatchState &), Play (*agentB)(Hand, Play, bool, const MatchState &), Play (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails)
 {
    // Play a match of the cricket card game between given agents.
    Hand hand1, hand2, hand3, tempHand, discardPile;
    Deck startingDeck;
    //int battingPlay, bowlingPlay, lastBowlingCardNumber;
-   //int (*agent1)(Hand, Card, bool, const MatchState &);
-   //int (*agent2)(Hand, Card, bool, const MatchState &);
-   //int (*agent3)(Hand, Card, bool, const MatchState &);
+   Play (*agent1)(Hand, Play, bool, const MatchState &);
+   Play (*agent2)(Hand, Play, bool, const MatchState &);
+   Play (*agent3)(Hand, Play, bool, const MatchState &);
+   Play aPlay, bPlay, cPlay;
    MatchState match;
-
-   //agent1 = agentA;
-   //agent2 = agentB;
-   //agent3 = agentC;
+   int round, iter;
    
-   
+   round = 0;
+   iter = 0;
+   agent1 = agentA;
+   agent2 = agentB;
+   agent3 = agentC;
    startingDeck.build();
    startingDeck.shuffle();
-   int iter = 0;
+
    while(startingDeck.getDeckSize() > 1)
    {
 	   if(iter == 3)
@@ -198,88 +251,113 @@ MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState
    {
       if (printAllDetails)
       {
-         cout << "A's hand: " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
+         cout << "_____________________________________________________________________________\n"
+              << "A's hand: " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
               << "B's hand: " << hand2.toString() << " Hand Size: " << hand2.getHandSize() << "\n"
               << "C's hand: " << hand3.toString() << " Hand Size: " << hand3.getHandSize() << "\n";
       }
-      /*lastBowlingCardNumber = bowlingCard.getNumber();
-      bowlingPlay = (*bowlingAgent)(bowlingHand, bowlingCard, false, match);
-      bowlingCard = bowlingHand.getCard(bowlingPlay);
       
-	  if (printAllDetails)
+      switch(round)
       {
-         cout << "      " << (match.isInFirstInnings() ? "B" : "A")
-              << " claims they have " << bowlingCard.toString() << "; ";
-      }
-	  /*
-      if (bowlingCard.getNumber() == lastBowlingCardNumber)
-      {
-         match.scoreRuns(1);
-         if (printAllDetails)
+         case 0: // if player A is playing
          {
-            cout << "umpire calls \"wide\" and "
-                 << (match.isInFirstInnings() ? "A" : "B") << " scores 1 run.\n";
-         }
-      }
-      else if (bowlingCard.getNumber() == lastBowlingCardNumber + 1)
-      {
-         match.scoreRuns(numRuns(lastBowlingCardNumber));
-         if (printAllDetails)
-         {
-            cout << "umpire calls \"bye\" and "
-                 << (match.isInFirstInnings() ? "A" : "B")
-                 << " scores " << numRuns(lastBowlingCardNumber) << " run"
-                 << (numRuns(lastBowlingCardNumber) == 1 ? "" : "s")
-                 << ".\n";
-         }
-      }
-      else
-      {
-         battingPlay = (*battingAgent)(battingHand, bowlingCard, true, match);
-         battingCard = battingHand.getCard(battingPlay);
-         battingHand.randomizeCard(battingPlay);
-         if (printAllDetails)
-         {
-            cout << (match.isInFirstInnings() ? "A" : "B") << " plays "
-                 << battingCard.toString() << " and ";
-         }
-         if (battingCard.getSuit() == bowlingCard.getSuit())
-         {
-            match.scoreRuns(numRuns(battingCard.getNumber() - bowlingCard.getNumber()));
+            aPlay = (*agent1)(hand1, cPlay, true, match);
             if (printAllDetails)
             {
-               cout << "scores "
-                    << numRuns(battingCard.getNumber() - bowlingCard.getNumber())
-                    << " run"
-                    << (numRuns(battingCard.getNumber() - bowlingCard.getNumber()) == 1 ? "" : "s")
-                    << ".\n";
+               cout << "A claims they have " << aPlay.getNumCards() << " " << aPlay.getCardType()<< "'s; \n";
             }
+            vector<Card> tempDiscs = aPlay.getDiscards();
+            if(hand1.getHandSize() == 1)
+            {
+               hand1.removeCard(0);
+               match.updateCardsPossessed(0, hand1.getHandSize());
+            }
+            if(tempDiscs.size() > 0)
+            {
+               for(int i = 0; i < hand1.getHandSize(); i++)
+               {
+                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  {
+                     if(hand1.getCard(i).equal(tempDiscs[j]))
+                     {
+                        discardPile.addCard(tempDiscs[j]);
+                        hand1.removeCard(i);
+                     }
+                  }
+                  
+               }
+            }
+            round++;
+            break;
          }
-         else if (battingCard.getNumber() >= bowlingCard.getNumber())
-         {
-            match.scoreRuns(0);
+         case 1: // if player B is playing
+           {
+            bPlay = (*agent2)(hand2, aPlay, true, match);
             if (printAllDetails)
             {
-               cout << "scores 0 runs.\n";
+               cout << "B claims they have " << bPlay.getNumCards() << " " << bPlay.getCardType()<< "'s; \n";
             }
+            vector<Card> tempDiscs = bPlay.getDiscards();
+            if(hand2.getHandSize() == 1)
+            {
+               hand2.removeCard(0);
+               match.updateCardsPossessed(1, hand2.getHandSize());
+            }
+            if(tempDiscs.size() > 0)
+            {
+               for(int i = 0; i < hand2.getHandSize(); i++)
+               {
+                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  {
+                     if(hand2.getCard(i).equal(tempDiscs[j]))
+                     {
+                        discardPile.addCard(tempDiscs[j]);
+                        hand2.removeCard(i);
+                        
+                     }
+                  }
+                  
+               }
+            }
+            round++;
+            break;
          }
-         else
+         case 2: // if player C is playing
          {
-            match.takeWicket();
+            cPlay = (*agent3)(hand3, bPlay, true, match);
             if (printAllDetails)
             {
-               cout << "is out.\n";
+               cout << "C claims they have " << cPlay.getNumCards() << " " << cPlay.getCardType()<< "'s; \n";
             }
+            vector<Card> tempDiscs = cPlay.getDiscards();
+            if(hand3.getHandSize() == 1)
+            {
+               hand3.removeCard(0);
+               match.updateCardsPossessed(2, hand3.getHandSize());
+            }
+            if(tempDiscs.size() > 0)
+            {
+               for(int i = 0; i < hand3.getHandSize(); i++)
+               {
+                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  {
+                     if(hand3.getCard(i).equal(tempDiscs[j]))
+                     {
+                        discardPile.addCard(tempDiscs[j]);
+                        hand3.removeCard(i);
+                     }
+                  }
+                  
+               }
+            }
+            round = 0;
+            break;
          }
       }
-      if (!match.isInFirstInnings() && match.getBalls(1) == 0)
-      {
-         battingAgent = agentB;
-         bowlingAgent = agentA;
-         tempHand = battingHand;
-         battingHand = bowlingHand;
-         bowlingHand = tempHand;
-      } */
+      
+      match.updateCardsPossessed(0, hand1.getHandSize());
+      match.updateCardsPossessed(1, hand2.getHandSize());
+      match.updateCardsPossessed(2, hand3.getHandSize());
    }
 
    return match;

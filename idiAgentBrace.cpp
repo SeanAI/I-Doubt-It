@@ -37,18 +37,24 @@ Play idiAgentBrace(Hand hand, Play lastBowledCard, int nextNumUp, const MatchSta
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
 
-   Play myPlay;
+     Play myPlay;
    vector<Card> myHand, discards;
-   
-   for(int i = 0; i < hand.getHandSize(); i++)
+
+   for(uint i = 0; i < hand.getHandSize(); i++)
    {
-      myHand.push_back(hand.getCard(i));
+      if(hand.getCard(i).getNumber() == nextNumUp)
+      {
+         discards.push_back(hand.getCard(i));
+      }
+   }
+   if(discards.empty())
+   {
+      discards.push_back(hand.getCard(0));
    }
    
-   discards.push_back(myHand.back());
-   myHand.pop_back();
+
    
-   myPlay.setCardsPlayed(2, nextNumUp, discards, true);
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
    return myPlay;
 }
 

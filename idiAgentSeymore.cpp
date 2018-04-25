@@ -39,24 +39,22 @@ Play idiAgentSeymore(Hand hand, Play lastBowledCard, int nextNumUp, const MatchS
 
    Play myPlay;
    vector<Card> myHand, discards;
-   int numDis = 0;
-   
-   for(int i = 0; i < hand.getHandSize(); i++)
+
+   for(uint i = 0; i < hand.getHandSize(); i++)
    {
       if(hand.getCard(i).getNumber() == nextNumUp)
       {
-         numDis++;
          discards.push_back(hand.getCard(i));
       }
    }
    if(discards.empty())
    {
       discards.push_back(hand.getCard(0));
-      numDis++;
    }
    
+
    
-   myPlay.setCardsPlayed(numDis, nextNumUp, discards, false);
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
    return myPlay;
 }
 

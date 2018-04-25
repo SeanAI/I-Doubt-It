@@ -37,7 +37,7 @@ public:
    Card(int numCard, cardSuit suitCard)
    {
       makeCard(numCard, suitCard);
-   };
+   }
    Card() {};
    int getNumber() const {return number;}
    cardSuit getSuit() const {return suit;}
@@ -115,13 +115,13 @@ class Deck
 	}
 	
    Card deal() {
-      int n;
+      // int n;
       Card card;
       
-      n = random() % deckOCards.size();
+      // n = random() % deckOCards.size();
       
-      card = deckOCards[n];
-      deckOCards.erase(deckOCards.begin() + n);
+      card = deckOCards[0];
+      deckOCards.erase(deckOCards.begin());
       
       return card;
    }
@@ -137,7 +137,7 @@ public:
    Card getCard(uint which) const 
    {
       Card errorCard;
-      if(which > 0 && which <= cards.size())
+      if(which >= 0 && which < cards.size())
          return cards[which];
       else
          return errorCard;
@@ -145,15 +145,16 @@ public:
    void removeCard(uint which)
    {
 	   Card removedCard;
-      if(which > 0 && which <= cards.size())
+      
+     if(cards.size() == 1)
+      {
+         cards.pop_back();
+      }
+      else if(which > 0 && which <= cards.size())
 	  {
 		  removedCard = cards[which];
 		  cards.erase(cards.begin() + which);
 	  } 
-      if(cards.size() == 1)
-      {
-         cards.pop_back();
-      }
    }
    int getHandSize()
    {

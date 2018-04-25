@@ -31,7 +31,7 @@ int main()
    j = 1; // meza
    l = 2; // seymore
    
-   for (k = 0; k <= 1; k += 1)
+   for (k = 0; k < 1; k += 1)
    {
       cout << "\n"
            << "A = " << agentStr[i] << ", B = " << agentStr[j] << ", C = " << agentStr[l] << ":"
@@ -130,7 +130,7 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
    startingDeck.shuffle();
    startingDeck.removeDumbCard();
 
-   while(startingDeck.getDeckSize() > 1)
+   while(startingDeck.getDeckSize() > 0)
    {
 	   if(iter == 3)
 	   {
@@ -152,7 +152,7 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
 				break;
 	   }
    }
-   discardPile.push_back(startingDeck.deal());
+   //discardPile.push_back(startingDeck.deal());
    iter = 1; //reset for use
    
    while (match.stillPlaying())
@@ -164,7 +164,7 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
       if (printAllDetails)
       {
          cout << "_____________________________________________________________________________\n"
-              << "A's hand: " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
+              << "A's hand: " << hand1.getCard(0).getNumber() << "   " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
               << "B's hand: " << hand2.toString() << " Hand Size: " << hand2.getHandSize() << "\n"
               << "C's hand: " << hand3.toString() << " Hand Size: " << hand3.getHandSize() << "\n";
       }
@@ -196,7 +196,7 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                      if(oppDiscs[i].getNumber() != cPlay.getCardType())
                      {
                         bluffed = true;
-                        cout << oppDiscs[i].getNumber() ;
+                        // cout << oppDiscs[i].getNumber() ;
                         cout << "C was bluffing! C must add all of the discard pile to their hand. \n";
                         while(!discardPile.empty())
                         {
@@ -205,6 +205,10 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                         }
                         break;
                      }
+                     // else
+                     // {
+                        // hand3.removeCard(i);
+                     // }
                      i++;
                   }
                   if(!bluffed)
@@ -224,16 +228,16 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                   cout << "A claims they have " << aPlay.getNumCards() << " " << aPlay.getCardType()<< "'s; \n";
                }
             }
-            if(hand1.getHandSize() == 1)
-            {
-               hand1.removeCard(0);
-               match.updateCardsPossessed(0, hand1.getHandSize());
-            }
+            // if(hand1.getHandSize() == 1)
+            // {
+               // hand1.removeCard(0);
+               // match.updateCardsPossessed(0, hand1.getHandSize());
+            // }
             if(tempDiscs.size() > 0)
             {
                for(int i = 0; i < hand1.getHandSize(); i++)
                {
-                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  for(int j = 0; j < tempDiscs.size(); j++)
                   {
                      if(hand1.getCard(i).equal(tempDiscs[j]))
                      {
@@ -278,6 +282,10 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                         }
                         break;
                      }
+                     // else
+                     // {
+                        // hand1.removeCard(i);
+                     // }
                      i++;
                   }
                   if(!bluffed)
@@ -299,23 +307,23 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                
             }
             
-            if(hand2.getHandSize() == 1)
+            /*if(hand2.getHandSize() == 1)
             {
                hand2.removeCard(0);
                match.updateCardsPossessed(1, hand2.getHandSize());
-            }
+            } */
             if(tempDiscs.size() > 0)
             {
                for(int i = 0; i < hand2.getHandSize(); i++)
                {
                   for(uint j = 0; j < tempDiscs.size(); j++)
                   {
-                     if(hand2.getCard(i).equal(tempDiscs[j]))
-                     {
+                     // if(hand2.getCard(i).equal(tempDiscs[j]))
+                     // {
                         discardPile.push_back(tempDiscs[j]);
-                        hand2.removeCard(i);
+                       hand2.removeCard(i);
                         
-                     }
+                     // }
                   }
                   
                }
@@ -351,6 +359,10 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                         }
                         break;
                      }
+                     // else
+                     // {
+                        // hand2.removeCard(i);
+                     // }
                      i++;
                   }
                   if(!bluffed)
@@ -371,11 +383,11 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
                }
                
             }
-            if(hand3.getHandSize() == 1)
-            {
-               hand3.removeCard(0);
-               match.updateCardsPossessed(2, hand3.getHandSize());
-            }
+            // if(hand3.getHandSize() == 1)
+            // {
+               // hand3.removeCard(0);
+               // match.updateCardsPossessed(2, hand3.getHandSize());
+            // }
             if(tempDiscs.size() > 0)
             {
                for(int i = 0; i < hand3.getHandSize(); i++)
@@ -395,14 +407,14 @@ MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, const MatchState
             break;
          }
       }
-      
+      hand1.removeDumbCard();
+      hand2.removeDumbCard();
+      hand3.removeDumbCard();
       match.updateCardsPossessed(0, hand1.getHandSize());
       match.updateCardsPossessed(1, hand2.getHandSize());
       match.updateCardsPossessed(2, hand3.getHandSize());
       iter++;
-      hand1.removeDumbCard();
-      hand2.removeDumbCard();
-      hand3.removeDumbCard();
+      
    }
 
    return match;

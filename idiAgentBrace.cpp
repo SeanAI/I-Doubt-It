@@ -26,7 +26,7 @@
 #include "iostream"
 
 // Rename and complete this agent function.
-Play idiAgentBrace(Hand hand, Play lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentBrace(Hand hand, Play lastBowledCard, int nextNumUp, const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -48,7 +48,7 @@ Play idiAgentBrace(Hand hand, Play lastBowledCard, bool isBatting, const MatchSt
    discards.push_back(myHand.back());
    myHand.pop_back();
    
-   myPlay.setCardsPlayed(2, 2, discards, true);
+   myPlay.setCardsPlayed(2, nextNumUp, discards, true);
    return myPlay;
 }
 

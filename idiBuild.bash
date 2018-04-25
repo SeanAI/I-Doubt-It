@@ -4,7 +4,7 @@
 # Final Project: I Doubt It card game
 
 challenge='idi'
-funcSignature='int _(Hand, Play, bool, const MatchState &)'
+funcSignature='int _(Hand, Play, int, const MatchState &)'
 funcNames=''
 objectFiles=''
 declare -i numAgents

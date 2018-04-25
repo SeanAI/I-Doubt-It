@@ -86,13 +86,21 @@ void MatchState::checkForResult()
 {
    // Check to see whether the match is finished and update accordingly.
    if(stats[0].cardsPossessed == 0)
-	   result = aWin;
-   else if(stats[1].cardsPossessed == 0)
-	   result = bWin;
-   else if(stats[2].cardsPossessed == 0)
-	   result = cWin;
-   else
-	   result = unfinished;
+   {
+      result = aWin;
+      return;
+   }
+	   
+   if(stats[1].cardsPossessed == 0)
+   {
+      result = bWin;
+      return;
+   }
+   if(stats[2].cardsPossessed == 0)
+	{
+      result = cWin;
+      return;
+   }
    
    return;
 }

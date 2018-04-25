@@ -26,7 +26,7 @@
 #include "iostream"
 
 // Rename and complete this agent function.
-Play idiAgentMeza(Hand hand, Play lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -47,7 +47,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, bool isBatting, const MatchSta
    discards.push_back(myHand.back());
    myHand.pop_back();
    
-   myPlay.setCardsPlayed(1, 1, discards, true);
+   myPlay.setCardsPlayed(1, nextNumUp, discards, false);
    return myPlay;
    
 }

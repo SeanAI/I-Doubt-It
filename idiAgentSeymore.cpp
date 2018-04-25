@@ -26,7 +26,7 @@
 #include "iostream"
 
 // Rename and complete this agent function.
-Play idiAgentSeymore(Hand hand, Play lastBowledCard, bool isPlaying, const MatchState &match)
+Play idiAgentSeymore(Hand hand, Play lastBowledCard, int nextNumUp, const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -39,16 +39,24 @@ Play idiAgentSeymore(Hand hand, Play lastBowledCard, bool isPlaying, const Match
 
    Play myPlay;
    vector<Card> myHand, discards;
+   int numDis = 0;
    
    for(int i = 0; i < hand.getHandSize(); i++)
    {
-      myHand.push_back(hand.getCard(i));
+      if(hand.getCard(i).getNumber() == nextNumUp)
+      {
+         numDis++;
+         discards.push_back(hand.getCard(i));
+      }
+   }
+   if(discards.empty())
+   {
+      discards.push_back(hand.getCard(0));
+      numDis++;
    }
    
-   discards.push_back(myHand.back());
-   myHand.pop_back();
    
-   myPlay.setCardsPlayed(3, 3, discards, true);
+   myPlay.setCardsPlayed(numDis, nextNumUp, discards, false);
    return myPlay;
 }
 

@@ -29,16 +29,16 @@ string Card::toString() const
    switch (suit)
    {
       case spades:
-         strstr << "$]";
+         strstr << " S]";
          break;
       case clubs:
-         strstr << "@]";
+         strstr << " C]";
          break;
       case hearts:
-         strstr << "!]";
+         strstr << " H]";
          break;
       case diamonds:
-         strstr << "*]";
+         strstr << " D]";
          break;
    }
    return strstr.str();
@@ -48,10 +48,14 @@ Hand::Hand()
 {   
 }
 
+Play::Play()
+{   
+}
+
 string Hand::toString() const
 {
    // Convert a hand of cards to a convenient string representation.
-   int whichCard;
+   uint whichCard;
    string str;
    for (whichCard = 0; whichCard < cards.size(); whichCard += 1)
    {
@@ -64,17 +68,40 @@ MatchState::MatchState()
 {
    // Start a new match from scratch.
    stats[0].bluffs = 0;
-   stats[0].cardsPossessed = 0;
+   stats[0].cardsPossessed = 17;
    stats[1].bluffs = 0;
-   stats[1].cardsPossessed = 0;
+   stats[1].cardsPossessed = 17;
    stats[2].bluffs = 0;
-   stats[2].cardsPossessed = 0;
+   stats[2].cardsPossessed = 17;
    result = unfinished;
+}
+
+void MatchState::updateCardsPossessed(int agent, int handSize)
+{
+	stats[agent].cardsPossessed = handSize;
+   checkForResult();
 }
 
 void MatchState::checkForResult()
 {
    // Check to see whether the match is finished and update accordingly.
+   if(stats[0].cardsPossessed == 0)
+   {
+      result = aWin;
+      return;
+   }
+	   
+   if(stats[1].cardsPossessed == 0)
+   {
+      result = bWin;
+      return;
+   }
+   if(stats[2].cardsPossessed == 0)
+	{
+      result = cWin;
+      return;
+   }
+   
    return;
 }
 

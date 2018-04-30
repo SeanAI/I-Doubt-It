@@ -25,8 +25,10 @@
 #include "math.h"
 #include "iostream"
 
+bool seymoreCheckIfBluffing(Play oppPlay, Hand myHand);
+
 // Rename and complete this agent function.
-Play idiAgentSeymore(Hand hand, Card lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentSeymore(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, int handSizes[],  const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -38,9 +40,58 @@ Play idiAgentSeymore(Hand hand, Card lastBowledCard, bool isBatting, const Match
    // See the definitions of Hand, Card and MatchState for more helpful functions.
 
    Play myPlay;
-   vector<Card> discards;
-   myPlay.setCardsPlayed(2, discards, false);
+   vector<Card> myHand, discards;
+   bool claimBluff;
+   
+   for(int i = 0; i < hand.getHandSize(); i++)
+   {
+      if(hand.getCard(i).getNumber() == nextNumUp)
+      {
+         discards.push_back(hand.getCard(i));
+      }
+   }
+   if(discards.empty())
+   {
+      discards.push_back(hand.getCard(0));
+   }
+   
+   claimBluff = seymoreCheckIfBluffing(oppLastPlay, hand);
+   if(claimBluff)
+   {
+      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, true);
+   }
+   else
+   {
+      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
+   }
+   
    return myPlay;
+}
+
+bool seymoreCheckIfBluffing(Play oppPlay, Hand myHand)
+{
+   int claim, numNeeded, iHave;
+   
+   claim = oppPlay.getNumCards();
+   numNeeded = oppPlay.getCardType();
+   iHave = 0;
+   
+   for(int i = 0; i < myHand.getHandSize(); i++)
+   {
+      if(numNeeded == myHand.getCard(i).getNumber())
+      {
+         iHave++;
+      }
+   }
+   if(claim > 2 && iHave > 0)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+   
 }
 
 /*

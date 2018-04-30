@@ -26,19 +26,35 @@
 #include "iostream"
 
 // Rename and complete this agent function.
-Play idiAgentMeza(Hand hand, Card lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardSize, int handSizes[], const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
    // hand.getCard(0) gives the first card in your hand.
-   // hand.getCard(0).getNumber() gives the number of that card, 1 to 11.
+   // hand.getCard(0).getNumber() gives the number of that card, 1 to 13.
    // hand.getCard(0).getSuit() gives the suit of that card.
    // match.getRuns(0) gives the number of runs scored by player A so far.
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
-    Play myPlay;
-   vector<Card> discards;
-   myPlay.setCardsPlayed(2, discards, false);
+   
+     Play myPlay;
+   vector<Card> myHand, discards;
+
+   for(int i = 0; i < hand.getHandSize(); i++)
+   {
+      if(hand.getCard(i).getNumber() == nextNumUp)
+      {
+         discards.push_back(hand.getCard(i));
+      }
+   }
+   if(discards.empty())
+   {
+      discards.push_back(hand.getCard(0));
+   }
+   
+
+   
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
    return myPlay;
    
 }

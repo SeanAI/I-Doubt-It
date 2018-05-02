@@ -108,20 +108,20 @@ class Deck
         int p = randomInt;
 		for(int i = 51; i > 0; i--)
 		{
-			Card temp = deckOCards[i];
+			temp = deckOCards[i];
 			deckOCards[i] = deckOCards[p];
          deckOCards[p] = temp;
 		}
 	}
 	
    Card deal() {
-      // int n;
+      int n;
       Card card;
       
-      // n = random() % deckOCards.size();
+      n = random() % deckOCards.size();
       
-      card = deckOCards[0];
-      deckOCards.erase(deckOCards.begin());
+      card = deckOCards[n];
+      deckOCards.erase(deckOCards.begin() + n);
       
       return card;
    }
@@ -150,7 +150,7 @@ public:
       {
          cards.pop_back();
       }
-      else if(which > 0 && which <= cards.size())
+      else if(which >= 0 && which < cards.size())
 	  {
 		  removedCard = cards[which];
 		  cards.erase(cards.begin() + which);
@@ -185,6 +185,9 @@ struct IDIStats
    int bluffs;
    
    IDIStats() {cardsPossessed = 0; bluffs = 0;}
+   void updateBluffs() {
+      bluffs += 1;
+   }
 };
 
 class Play
@@ -231,8 +234,10 @@ private:
 public:
    MatchState();
    int getResult() const {return result;}
+   IDIStats getStats(int which) {return stats[which];}
    bool stillPlaying() const {return result == unfinished;}
-   void updateCardsPossessed(int agent, int as);
+   void updateStats(int agent, int as, bool bluff);
+   // void updateStates(int agent, bool bluff);
 };
 
 #endif // #ifndef CCG_H

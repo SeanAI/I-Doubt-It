@@ -76,8 +76,15 @@ MatchState::MatchState()
    result = unfinished;
 }
 
-void MatchState::updateCardsPossessed(int agent, int handSize)
+// void MatchState::updateStates(int agent, bool bluff) {
+// }
+
+void MatchState::updateStats(int agent, int handSize, bool bluff)
 {
+	if (bluff) {
+		stats[agent].bluffs += 1;
+	}
+   cout << "POOP: " << stats[agent].bluffs;
 	stats[agent].cardsPossessed = handSize;
    checkForResult();
 }

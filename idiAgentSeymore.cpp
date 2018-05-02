@@ -91,7 +91,6 @@ bool seymoreCheckIfBluffing(Play oppPlay, Hand myHand)
    {
       return false;
    }
-   
 }
 
 /*

@@ -56,7 +56,6 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardSize
    
    myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
    return myPlay;
-   
 }
 
 /*

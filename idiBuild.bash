@@ -132,7 +132,7 @@ else
 fi
 
 echo " * Linking . . ."
-execFile="${challenge}RunSim"
+execFile="d"
 rm -f "${execFile}"
 if ${CXX} ${LDLIBS} -o "${execFile}" "${challenge}Main.o" "${challenge}Funcs.o" "${challenge}.o" ${objectFiles}
 then

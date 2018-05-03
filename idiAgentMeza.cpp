@@ -1,7 +1,7 @@
-// YOUR NAME: Josh Seymore
+// YOUR NAME: Leah Meza
 //
 // CS 4318, spring 2018
-// Agent Challenge 4: Cricket card game
+// Final Project: I Doubt It
 //
 // Rename this file and the function below.  For example, if your agent name
 // is Jones, rename this ccgAgentSmith.cpp file to ccgAgentJones.cpp and the
@@ -25,24 +25,293 @@
 #include "math.h"
 #include "iostream"
 
+bool callOutBluff(Play oppPlay, Hand myHand, int discardSize, int oppPlaySize);
 // Rename and complete this agent function.
-Play idiAgentMeza(Hand hand, Card lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPileSize, int handSize[], const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
    // hand.getCard(0) gives the first card in your hand.
-   // hand.getCard(0).getNumber() gives the number of that card, 1 to 11.
+   // hand.getCard(0).getNumber() gives the number of that card, 1 to 13.
    // hand.getCard(0).getSuit() gives the suit of that card.
    // match.getRuns(0) gives the number of runs scored by player A so far.
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
-    Play myPlay;
+   
+   Play myPlay;
    vector<Card> discards;
-   myPlay.setCardsPlayed(2, discards, false);
+   int aces = 0;
+   int twos = 0;
+   int threes = 0;
+   int fours = 0;
+   int fives = 0;
+   int sixes = 0;
+   int sevens = 0;
+   int eights = 0;
+   int nines = 0;
+   int tens = 0;
+   int jacks = 0;
+   int queens = 0;
+   int kings = 0;
+
+   
+   if(hand.getHandSize() >= 10)
+   {
+	   for (int i = 0; i < hand.getHandSize(); i++)
+	   {
+		   for(int j = 1; j < 14; j++)
+		   {
+				if (hand.getCard(i).getNumber() ==  j)
+				{
+					if (j == 1)
+					{
+						aces++;
+					}
+					if (j == 2)
+					{
+						twos++;
+					}
+					if (j == 3)
+					{
+						threes++;
+					}
+					if (j == 4)
+					{
+						fours++;
+					}
+					if (j == 5)
+					{
+						fives++;
+					}
+					if (j == 6)
+					{
+						sixes++;
+					}
+					if (j == 7)
+					{
+						sevens++;
+					}
+					if (j == 8)
+					{
+						eights++;
+					}
+					if (j == 9)
+					{
+						nines++;
+					}
+					if (j == 10)
+					{
+						tens++;
+					}
+					if (j == 11)
+					{
+						jacks++;
+					}
+					if (j == 12)
+					{
+						queens++;
+					}
+					if (j == 13)
+					{
+						kings++;
+					}
+					else {
+						//do nothing
+					}
+				}
+		   }
+	   }
+	   if (aces >= 2 && aces <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 1)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			aces = 0;
+	   }
+	   else if (twos >= 2 && twos <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 2)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			twos = 0;
+	   }
+	   else if (threes >= 2 && threes <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 3)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			threes = 0;
+	   }
+	   else if (fours >= 2 && fours <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 4)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			fours = 0;
+	   }
+	   else if (fives >= 2 && fives <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 5)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			fives = 0;
+	   }
+	   else if (sixes >= 2 && sixes <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 6)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			sixes = 0;
+	   }
+	   else if (sevens >= 2 && sevens <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 7)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			sevens = 0;
+	   }
+	   else if (eights >= 2 && eights <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 8)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			eights = 0;
+	   }
+	   else if (nines >= 2 && nines <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 9)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			nines = 0;
+	   }
+	   else if (tens >= 2 && tens <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 10)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			tens = 0;
+	   }
+	   else if (jacks >= 2 && jacks <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 11)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			jacks = 0;
+	   }
+	   else if (queens >= 2 && queens <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 12)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			queens = 0;
+	   }
+	   else if (kings >= 2 && kings <= 4)
+	   {
+		   for(int k = 0; k < hand.getHandSize(); k++)
+			{
+				if(hand.getCard(k).getNumber() == 13)
+				{
+					discards.push_back(hand.getCard(k));
+				}
+			}
+			kings = 0;
+	   }
+	   else
+		{
+				discards.push_back(hand.getCard(0));
+		}
+   }
+   
+   //Wanted to try and get the agent to see what cards have a similar suit.
+   // If it has alot of a certain number, then it will choose to discard that 
+   // entire stack of numbers it has
+   /* This way the agent does not lie as much*/
+   
+   // if opponent plays 2 cards, then the agent may or may not call them out. If it exceeds
+   // 3 cards, then the agent will definitely call them out. Otherwise, the agent will not
+   // call the other agent out.
+	
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
    return myPlay;
    
 }
-
+bool callOutBluff(Play oppPlay, Hand myHand, int discardSize, int oppPlaySize){
+	int selectedCards, bluff;
+	
+	selectedCards = oppPlay.getCardType();
+	bluff = 0;
+	
+		for(int i = 0; i < myHand.getHandSize(); i++)
+		{
+			if (selectedCards == myHand.getCard(i).getNumber())
+			{
+				bluff++;
+			}
+		}
+		if (oppPlay.getClaim())
+		{
+			return false;
+		}
+		if (oppPlaySize > 2)
+		{
+			return true;
+		}
+		if (bluff >= 1)
+		{
+			return true;
+		}
+		else{
+			return false;
+		}
+}
 /*
 
  - First, carefully comment your code above.

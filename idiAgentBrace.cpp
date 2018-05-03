@@ -25,9 +25,7 @@
 #include "math.h"
 #include "iostream"
 
-// Rename and complete this agent function.
-Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchState &match)
-{
+vector<Card> seanPickBluffs(int oppVal, int val, vector<vector<Card> > check);
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
    // hand.getCard(0) gives the first card in your hand.
@@ -36,12 +34,183 @@ Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchSt
    // match.getRuns(0) gives the number of runs scored by player A so far.
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
-
+// Rename and complete this agent function.
+Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, int handSizes[],  const MatchState &match) {
    Play myPlay;
+   Card cards;
    vector<Card> discards;
-   myPlay.setCardsPlayed(2, discards, false);
+   // vector<int> numType(13);
+   vector<vector<Card> > check(13);
+   uint count, size;
+   // int val, score, oppScore, oppChance, chance, oppNum, oppVal, choice;
+   // int val, score, oppChance, chance, oppNum, choice, oppVal, next, bestScore, numPlay, i;
+   int val, score, oppChance, chance, oppNum, oppVal, next, bestScore, numPlay, i;
+   // bool bluff, oppBluff, choice;
+   bool doubt, bluff;
+   
+   srand(time(NULL));
+   doubt = false;
+   // choice = 0;
+   // bluff = true;
+   // oppBluff = true;
+   next = nextNumUp - 1;
+   bestScore = INT_MIN;
+   numPlay = 0;
+   size = hand.getHandSize();
+   score = 0;
+   chance = (size + size / 2) - discardSize;
+   // oppScore = 0;
+   oppChance = 0;
+   oppNum = oppLastPlay.getNumCards();
+   oppVal = oppLastPlay.getCardType();
+   
+   
+   for (count = 0; count < size; count++) {
+      cards = hand.getCard(count);
+      val = cards.getNumber();
+      // numType[val - 1] += 1;
+      check[val - 1].push_back(cards);
+      
+      // if (cards.getNumber() == nextNumUp) {
+         // discards.push_back(cards);
+      // }
+   }
+   
+   if (size == 1) {
+      discards.push_back(cards);
+   } else if (size == check[next].size()) {
+      discards = check[next];
+   } else if (check[next].size() > 1) {
+      // cout << "\n" << next << " " << val - 1 << " " << nextNumUp << " " << check[next].size() << "\n";
+      for (count = 0; count < check[next].size(); count++) {
+         // if (cards.getNumber() == nextNumUp) {
+         // if (check[next][count].getNumber() == nextNumUp) {
+            discards.push_back(check[next][count]);
+         // }
+      }
+   } else {
+      
+      if (check[next].empty()) {
+         chance += 1000;
+      } else {
+         if (check[next].size() < 2) {
+            chance += 12 - (discardSize / 2);
+         }
+         if (check[next].size() < 3) {
+            chance += 5 - discardSize;
+         }
+      }
+      
+      if (oppNum > 1) {
+         oppChance += 10;
+         if (oppNum >= 2) {
+            if (check[oppVal - 1].size() > 2) {
+               oppChance += 1000;
+            // } else if (check[oppVal - 1].size() <= 2) {
+            } else {
+               oppChance += 10 - (discardSize - handSizes[2]);
+            }
+         }
+         if (handSizes[2] < 5) {
+            oppChance += 12;
+            if (handSizes[2] < 3) {
+               oppChance += 15;
+            }
+         }
+      }
+      
+      
+      
+      if (discardSize < 8) {
+         chance += 10;
+      } else {
+         chance -= discardSize;
+      }
+      
+      if (oppChance - chance >= 30) {
+         doubt = true;
+      } else if (chance - oppChance >= 25) {
+         discards = seanPickBluffs(oppVal, next, check);
+      } else {
+         // choice = check
+         i = 0;
+         while (i < check[next].size()) {
+            // if (cards.getNumber() == nextNumUp) {
+            // discards.push_back(cards);
+            discards.push_back(check[next][i]);
+            i++;
+         }
+      }
+   }
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, doubt);
+   
    return myPlay;
 }
+
+
+vector<Card> seanPickBluffs(int oppVal, int val, vector<vector<Card> > check) {
+   vector<Card> destroy;
+   int count, i, score, numPlay, choice, bestScore, next;
+   int bluf1, bluf2, bluf3;
+   bluf1 = 55;
+   bluf2 = 40;
+   bluf3 = 5;
+   bestScore = 0;
+   i = 0;
+   numPlay = 0;
+   choice = 0;
+   srand(time(NULL));
+   // loop through check, score = number of cards of that val I have, combined somehow with how soon I will be able to play that card.
+      numPlay = rand() % 100;
+      if (numPlay <= bluf1) {
+         numPlay = 1;
+      } else if (numPlay > bluf1 && numPlay <= bluf1 + bluf2) {
+         numPlay = 2;
+      } else {
+         numPlay = 3;
+      }
+   // for (count = 0; count < 5; count++) {
+   // for (count = 0; count < 10; count += 2) {
+   for (count = 0; count < 13; count += 1) {
+      score = 0;
+      choice = count;
+      // choice = next + ((count * 2) % 3) % 13;
+      // choice = val + ((count * 2) % 3) % 13;
+      // how close am I to playing the card?
+      // Example-> start at:  1,    4,    7,    10,      13
+      // How many do I have?  ^     ^     ^     ^        ^   
+      // score += check[choice].size() * 4;
+      // score += check[next].size() * 4;
+      // if (score / 4 > numPlay)
+      // if (oppVal - 1 == choice) {
+         // score += oppVal * 2;
+      // }
+      score += check[choice].size();
+      if (bestScore < score) {
+         bestScore = score;
+         // as for the rng deciding how many cards I play when bluffing, 1 = 55%, 2 = 40%, 3 = 5% <- may change these to make 3 <= 3%, really don't want
+         // to bluff 3 cards, in fact I may completely remove it.
+         // cout << "\n********************\n" << choice << " " << i << endl;
+         // cout << "\n********************\n" << choice << " " << check[choice].size() << endl;
+         // if (destroy.size() < numPlay && !check[choice % 13].empty()) {
+         if (destroy.size() < numPlay && !check[choice].empty()) {
+            // destroy.push_back(check[choice % 13][i]);
+            // if (!destroy.empty()) {
+               // // if (numPlay > 1 && check[choice][0] == destroy[0] && count !=) {
+                  
+               // // }
+            // } else {
+               // destroy.push_back(check[choice][0]);
+            // }
+            destroy.push_back(check[choice][0]);
+            // i++;
+         }
+      }
+   }
+   return destroy;
+   // bluff = true;
+}
+
 
 /*
 

@@ -7,16 +7,16 @@
 #include "idi.h"
 
 extern const int numAgents;
-extern int (*agentFunc[])(Hand, Play, bool, const MatchState &);
+extern Play (*agentFunc[])(Hand, Play, int, int, int[], const MatchState &);
 extern string agentStr[];
 
-MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState &), int (*agentB)(Hand, Play, bool, const MatchState &), int (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails);
+// MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, int, int[],const MatchState &), Play (*agentB)(Hand, Play, int, int, int[], const MatchState &), Play (*agentC)(Hand, Play, int, int, int[], const MatchState &), bool printAllDetails, IDIStats playerStats[]);
+MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, int, int[],const MatchState &), Play (*agentB)(Hand, Play, int, int, int[], const MatchState &), Play (*agentC)(Hand, Play, int, int, int[], const MatchState &), bool printAllDetails, IDIStats playerStats[]);
 
 int main()
 {
    IDIStats playerStats[numAgents];
-   int i, numLosses[numAgents], numWins[numAgents], k, j, l,
-   order[numAgents];//, temp;
+   int i, numLosses[numAgents], numWins[numAgents], numBluffs[numAgents], k, j, l;
    MatchState match;
 
    srandom(time(0));
@@ -27,152 +27,123 @@ int main()
    {
       numWins[i] = 0;
       numLosses[i] = 0;
-   }
-   for (i = 0; i < numAgents; i += 1)
+	  numBluffs[i] = 0;
+    }
+   i = 0; // brace
+   j = 1; // meza
+   l = 2; // seymore
+   
+   for (k = 0; k < 20; k += 1)
    {
-      for (j = 0; j < numAgents; j += 1)
+      if (k == 0)
       {
-		  for (l = 0; l < numAgents; l += 1)
-		  {
-			for (k = 0; k <= 200; k += 1)
-			{
-				match = playIDICardGameMatch(agentFunc[i], agentFunc[j], agentFunc[l], k == 0);
-			}
-		  }
+		cout << "\n"
+           << "A = " << agentStr[i] << ", B = " << agentStr[j] << ", C = " << agentStr[l] << ":"
+           << "\n"
+           << "Exhibition match:\n" << flush;
+      } else if (k == 1) {
+        cout << "\nOfficial matches:\n"
+           << endl << "A = " << agentStr[i] << ", B = " << agentStr[j] << ", C = " << agentStr[l] << ":" << endl;
 	  }
+      match = playIDICardGameMatch(agentFunc[i], agentFunc[j], agentFunc[l], k == 0, playerStats);
+      numBluffs[i] += match.getStats(0).bluffs;
+      numBluffs[j] += match.getStats(1).bluffs;
+	  numBluffs[l] += match.getStats(2).bluffs;
+      switch (match.getResult())
+      {
+         case aWin:
+            cout << "\n   >>> A wins <<<\n"  << " A: Cards Possessed: " << match.getStats(0).cardsPossessed << " | Bluffs: " << match.getStats(0).bluffs  << "\n"
+										<< " B: Cards Possessed: " << match.getStats(1).cardsPossessed << " | Bluffs: " << match.getStats(1).bluffs << "\n"
+										<< " C: Cards Possessed: " << match.getStats(2).cardsPossessed << " | Bluffs: " << match.getStats(2).bluffs << "\n";
+            break;
+         case bWin:
+			cout << "\n   >>> B wins <<<\n"  << " A: Cards Possessed: " << match.getStats(0).cardsPossessed << " | Bluffs: " << match.getStats(0).bluffs  << "\n"
+							<< " B: Cards Possessed: " << match.getStats(1).cardsPossessed << " | Bluffs: " << match.getStats(1).bluffs << "\n"
+							<< " C: Cards Possessed: " << match.getStats(2).cardsPossessed << " | Bluffs: " << match.getStats(2).bluffs << "\n";
+            break;
+         case cWin:
+			cout << "\n   >>> C wins <<<\n"  << " A: Cards Possessed: " << match.getStats(0).cardsPossessed << " | Bluffs: " << match.getStats(0).bluffs  << "\n"
+							<< " B: Cards Possessed: " << match.getStats(1).cardsPossessed << " | Bluffs: " << match.getStats(1).bluffs << "\n"
+							<< " C: Cards Possessed: " << match.getStats(2).cardsPossessed << " | Bluffs: " << match.getStats(2).bluffs << "\n";
+            break;
+      }
+            switch (match.getResult())
+            {
+               case aWin:
+                  numWins[i] += 1;
+                  numLosses[j] += 1;
+                  numLosses[l] += 1;
+                  break;
+               case bWin:
+                  numWins[j] += 1;
+                  numLosses[i] += 1;
+                  numLosses[l] += 1;
+                  break;
+               case cWin:
+                  numWins[l] += 1;
+                  numLosses[j] += 1;
+                  numLosses[i] += 1;
+                  break;
+            }
+     
+   }
+   cout << "\n\n"
+        << "Overall standings:                              \n"
+        << "                         W     L     Bluffs\n";
+   cout << fixed;
+   priority_queue<int> orderWins;
+   for (i = 0; i < numAgents; i += 1) {
+      orderWins.push(numWins[i]);
    }
    
-   /*
-   for (i = 0; i < numAgents; i += 1)
-   {
-      for (j = 0; j < numAgents; j += 1)
-      {
-         if (i != j)
-         {
-            cout << "\n"
-                 << "A = " << agentStr[i] << ", B = " << agentStr[j] << ", C = " << agentStr[j]":"
-                 << "\n"
-                 << "Exhibition match:\n" << flush;
-            for (k = 0; k <= 200; k += 1)
-            {
-               match = playIDICardGameMatch(agentFunc[i], agentFunc[j], k == 0);
-               cout << "   A " << match.getRuns(0) << "-"
-                    << match.getWickets(0) << "(" << match.getBalls(0)
-                    << "), B " << match.getRuns(1) << "-"
-                    << match.getWickets(1) << "(" << match.getBalls(1)
-                    << ")";
-               switch (match.getResult())
-               {
-                  case aWin:
-                     cout << "   >>> A wins <<<\n";
-                     break;
-                  case bWin:
-                     cout << "   >>> B wins <<<\n";
-                     break;
-                  case cWin:
-                     cout << "   >>> C wins <<<\n";
-                     break;
-               }
-               if (k == 0)
-               {
-                  cout << "Official matches:\n";
-               }
-               else
-               {
-                  switch (match.getResult())
-                  {
-                     case aWin:
-                        numWins[i] += 1;
-                        pointsAsA[i] += 4;
-                        numLosses[j] += 1;
-                        break;
-                     case bWin:
-                        numLosses[i] += 1;
-                        numWins[j] += 1;
-                        pointsAsB[j] += 4;
-                        break;
-                     case draw:
-                        numDraws[i] += 1;
-                        pointsAsA[i] += 1;
-                        numDraws[j] += 1;
-                        pointsAsB[j] += 1;
-                        break;
-                     case tie:
-                        numTies[i] += 1;
-                        pointsAsA[i] += 2;
-                        numTies[j] += 1;
-                        pointsAsB[j] += 2;
-                        break;
-                  }
-                  IDIStats[i].runs += match.getRuns(0);
-                  IDIStats[i].wickets += match.getWickets(0);
-                  IDIStats[i].balls += match.getBalls(0);
-                  IDIStats[i].runs += match.getRuns(1);
-                  IDIStats[i].wickets += match.getWickets(1);
-                  IDIStats[i].balls += match.getBalls(1);
-                  IDIStats[j].runs += match.getRuns(1);
-                  IDIStats[j].wickets += match.getWickets(1);
-                  IDIStats[j].balls += match.getBalls(1);
-                  IDIStats[j].runs += match.getRuns(0);
-                  IDIStats[j].wickets += match.getWickets(0);
-                  IDIStats[j].balls += match.getBalls(0);
-               }
-            }
+      i = 0;
+      while (!orderWins.empty()) {
+         if (numWins[i] == orderWins.top()) {
+            cout << setw(20) << left << agentStr[i]
+                 << " " << setw(5) << right << numWins[i]
+                 << " " << setw(5) << right << numLosses[i]
+                 << " " << setw(10) << right << numBluffs[i] << "\n";
+            orderWins.pop();
          }
+         i++;
+         i %= numAgents;
       }
-   }
-
-   for (i = 0; i < numAgents; i += 1)
-   {
-      order[i] = i;
-   }
-   for (i = 0; i < numAgents - 1; i += 1)
-   {
-      for (j = i + 1; j < numAgents; j += 1)
-      {
-         if (pointsAsA[order[i]] + pointsAsB[order[i]] < pointsAsA[order[j]] + pointsAsB[order[j]] || (pointsAsA[order[i]] + pointsAsB[order[i]] == pointsAsA[order[j]] + pointsAsB[order[j]] &&
-             agentStr[order[i]] > agentStr[order[j]]))
-         {
-            temp = order[i];
-            order[i] = order[j];
-            order[j] = temp;
-         }
-      }
-   } */
-   cout << "\n\n"
-        << "Overall standings:                                    points          batting         bowling\n"
-        << "                    points     W     L     D     T  as A  as B      R/W     R/hB    R/W     B/W\n";
-   cout << fixed;
-   /*for (i = 0; i < numAgents; i += 1)
-   {
-      cout << setw(20) << left << agentStr[order[i]]
-           << " " << setw(5) << right << numWins[order[i]]
-           << " " << setw(5) << right << numLosses[order[i]]
-           << " " << setprecision(2) << setw(7) << right << playerStats[order[i]].bluffs << "\n";
-   } */
    return 0;
 }
 
-MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState &), int (*agentB)(Hand, Play, bool, const MatchState &), int (*agentC)(Hand, Play, bool, const MatchState &), bool printAllDetails)
+MatchState playIDICardGameMatch(Play (*agentA)(Hand, Play, int, int, int[], const MatchState &), Play (*agentB)(Hand, Play, int, int, int[], const MatchState &), Play (*agentC)(Hand, Play, int, int, int[], const MatchState &), bool printAllDetails, IDIStats playerStats[])
 {
    // Play a match of the cricket card game between given agents.
-   Hand hand1, hand2, hand3, tempHand, discardPile;
-   Deck startingDeck;
+   Hand hand1, hand2, hand3, tempHand;
+   Deck startingDeck; 
+   vector<Card> discardPile, firstDiscard;
    //int battingPlay, bowlingPlay, lastBowlingCardNumber;
-   //int (*agent1)(Hand, Card, bool, const MatchState &);
-   //int (*agent2)(Hand, Card, bool, const MatchState &);
-   //int (*agent3)(Hand, Card, bool, const MatchState &);
+   Play (*agent1)(Hand, Play, int, int, int[], const MatchState &);
+   Play (*agent2)(Hand, Play, int, int, int[], const MatchState &);
+   Play (*agent3)(Hand, Play, int, int, int[], const MatchState &);
+   Play aPlay, bPlay, cPlay, firstPlay;
    MatchState match;
-
-   //agent1 = agentA;
-   //agent2 = agentB;
-   //agent3 = agentC;
+   int round, iter;
+   int handSizes[3];
+   bool firstRound, bluffed;
    
    
+   //initialize
+   firstRound = true;
+   firstPlay.setCardsPlayed(0, 0 , firstDiscard, false);
+   round = 0;
+   iter = 0;
+   handSizes[0] = hand1.getHandSize();
+   handSizes[1] = hand2.getHandSize();
+   handSizes[2] = hand3.getHandSize();
+   agent1 = agentA;
+   agent2 = agentB;
+   agent3 = agentC;
    startingDeck.build();
    startingDeck.shuffle();
-   int iter = 0;
-   while(startingDeck.getDeckSize() > 1)
+   startingDeck.removeDumbCard();
+
+   while(startingDeck.getDeckSize() != 0)
    {
 	   if(iter == 3)
 	   {
@@ -194,93 +165,437 @@ MatchState playIDICardGameMatch(int (*agentA)(Hand, Play, bool, const MatchState
 				break;
 	   }
    }
+   discardPile.push_back(startingDeck.getLastCard());
+   iter = 1; //reset for use
+   
    while (match.stillPlaying())
    {
+     
+      if(iter > 13)
+      {
+         iter = 1;
+      }
       if (printAllDetails)
       {
-         cout << "A's hand: " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
+		  cout << "_____________________________________________________________________________\n\n"
+		  << "Discards: ";
+		  for(uint i = 0; i < discardPile.size(); i++)
+		  {
+			 cout << discardPile[i].toString();
+		  }
+		  cout << " | Number of Discards: " << discardPile.size() << "\n\n";
+		  
+          cout << "A's hand: " << hand1.toString()<< " Hand Size: " << hand1.getHandSize() << "\n"
               << "B's hand: " << hand2.toString() << " Hand Size: " << hand2.getHandSize() << "\n"
-              << "C's hand: " << hand3.toString() << " Hand Size: " << hand3.getHandSize() << "\n";
+              << "C's hand: " << hand3.toString() << " Hand Size: " << hand3.getHandSize() << "\n\n";
       }
-      /*lastBowlingCardNumber = bowlingCard.getNumber();
-      bowlingPlay = (*bowlingAgent)(bowlingHand, bowlingCard, false, match);
-      bowlingCard = bowlingHand.getCard(bowlingPlay);
       
-	  if (printAllDetails)
+      switch(round)
       {
-         cout << "      " << (match.isInFirstInnings() ? "B" : "A")
-              << " claims they have " << bowlingCard.toString() << "; ";
-      }
-	  /*
-      if (bowlingCard.getNumber() == lastBowlingCardNumber)
-      {
-         match.scoreRuns(1);
-         if (printAllDetails)
+         case 0: // if player A is playing
          {
-            cout << "umpire calls \"wide\" and "
-                 << (match.isInFirstInnings() ? "A" : "B") << " scores 1 run.\n";
-         }
-      }
-      else if (bowlingCard.getNumber() == lastBowlingCardNumber + 1)
-      {
-         match.scoreRuns(numRuns(lastBowlingCardNumber));
-         if (printAllDetails)
-         {
-            cout << "umpire calls \"bye\" and "
-                 << (match.isInFirstInnings() ? "A" : "B")
-                 << " scores " << numRuns(lastBowlingCardNumber) << " run"
-                 << (numRuns(lastBowlingCardNumber) == 1 ? "" : "s")
-                 << ".\n";
-         }
-      }
-      else
-      {
-         battingPlay = (*battingAgent)(battingHand, bowlingCard, true, match);
-         battingCard = battingHand.getCard(battingPlay);
-         battingHand.randomizeCard(battingPlay);
-         if (printAllDetails)
-         {
-            cout << (match.isInFirstInnings() ? "A" : "B") << " plays "
-                 << battingCard.toString() << " and ";
-         }
-         if (battingCard.getSuit() == bowlingCard.getSuit())
-         {
-            match.scoreRuns(numRuns(battingCard.getNumber() - bowlingCard.getNumber()));
+            if(firstRound)
+            {
+               aPlay = (*agent1)(hand1, firstPlay, iter, discardPile.size(), handSizes, match);
+            }
+            else
+            {
+               aPlay = (*agent1)(hand1, cPlay, iter, discardPile.size(), handSizes, match);
+            }
+            vector<Card> oppDiscs = cPlay.getDiscards();
+            vector<Card> tempDiscs = aPlay.getDiscards();
             if (printAllDetails)
             {
-               cout << "scores "
-                    << numRuns(battingCard.getNumber() - bowlingCard.getNumber())
-                    << " run"
-                    << (numRuns(battingCard.getNumber() - bowlingCard.getNumber()) == 1 ? "" : "s")
-                    << ".\n";
+               if(aPlay.getClaim() && !firstRound)
+               {
+                  cout << "A doubts it!\n";
+                  
+                  uint i = 0;
+                  // bool bluffed = false;
+                  while(i < oppDiscs.size() && !bluffed)
+                  {
+                     if(oppDiscs[i].getNumber() != cPlay.getCardType())
+                     {
+                        bluffed = true;
+                        // playerStats[0].bluffs += 1;
+                        cout << "C was bluffing! C must add all of the discard pile to their hand. \n";
+                        while(!discardPile.empty())
+                        {
+                           hand3.addCard(discardPile.back());
+                           discardPile.pop_back();
+                        }
+                        break;
+                     }
+                     i++;
+                  }
+                  if(!bluffed)
+                  {
+                      cout << "C was telling the truth! A must add all of the discard pile to their hand. \n";
+                     while(!discardPile.empty())
+                     {
+                        hand1.addCard(discardPile.back());
+                        discardPile.pop_back();
+                     }
+                  }
+                  round++;
+                  break;
+               }
+               else
+               {
+                  cout << "A claims they have " << aPlay.getNumCards() << " " << aPlay.getCardType()<< "'s; \n";
+               }
+            } else {
+               if(aPlay.getClaim() && !firstRound)
+               {
+                  // cout << "A doubts it!\n";
+                  
+                  uint i = 0;
+                  // bool bluffed = false;
+                  while(i < oppDiscs.size() && !bluffed)
+                  {
+                     if(oppDiscs[i].getNumber() != cPlay.getCardType())
+                     {
+                        bluffed = true;
+                        // playerStats[0].bluffs += 1;
+                        // cout << "C was bluffing! C must add all of the discard pile to their hand. \n";
+                        while(!discardPile.empty())
+                        {
+                           hand3.addCard(discardPile.back());
+                           discardPile.pop_back();
+                        }
+                        break;
+                     }
+                     i++;
+                  }
+                  if(!bluffed)
+                  {
+                      // cout << "C was telling the truth! A must add all of the discard pile to their hand. \n";
+                     while(!discardPile.empty())
+                     {
+                        hand1.addCard(discardPile.back());
+                        discardPile.pop_back();
+                     }
+                  }
+                  round++;
+                  break;
+               }
             }
+            if(hand1.getHandSize() == 1)
+            {
+               hand1.removeCard(0);
+               // match.updateStats(0, hand1.getHandSize(), bluffed);
+            }
+            if(tempDiscs.size() > 0)
+            {
+			   for(int i = 0; i < hand1.getHandSize(); i++)
+               {
+                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  {
+                     if(hand1.getCard(i).equal(tempDiscs[j]))
+                     {
+                        discardPile.push_back(tempDiscs[j]);
+                        hand1.removeCard(i);
+                     }
+                  }
+                  
+               }
+			  for(uint j = 0; j < tempDiscs.size(); j++)
+			  {
+				 if(tempDiscs[j].getNumber() != aPlay.getCardType())
+				 {
+					bluffed = true;
+					
+					for(int i = 0; i < hand1.getHandSize(); i++)
+					{
+						if(hand1.getCard(i).equal(tempDiscs[j]))
+						{
+							discardPile.push_back(tempDiscs[j]);
+							hand1.removeCard(i);
+						}
+					}                        
+				}
+			  }
+               if(bluffed)
+               {
+                  match.updateStats(0, hand1.getHandSize(), true);
+               }
+            }
+            round++;
+            if(firstRound)
+            {
+               firstRound = false;
+            }
+            break;
          }
-         else if (battingCard.getNumber() >= bowlingCard.getNumber())
-         {
-            match.scoreRuns(0);
+         case 1: // if player B is playing
+           {
+            bPlay = (*agent2)(hand2, aPlay, iter, discardPile.size(), handSizes, match);
+            vector<Card> oppDiscs = aPlay.getDiscards();
+            vector<Card> tempDiscs = bPlay.getDiscards();
             if (printAllDetails)
             {
-               cout << "scores 0 runs.\n";
+               if(bPlay.getClaim() && !firstRound)
+               {
+                  cout << "B doubts it!\n";
+                  
+                  uint i = 0;
+                  // bool bluffed = false;
+                  while(i < oppDiscs.size() && !bluffed)
+                  {
+                     if(oppDiscs[i].getNumber() != cPlay.getCardType())
+                     {
+                        bluffed = true;
+                        cout << "A was bluffing! A must add all of the discard pile to their hand. \n";
+                        while(!discardPile.empty())
+                        {
+                           hand1.addCard(discardPile.back());
+                           discardPile.pop_back();
+                        }
+                        break;
+                     }
+                     i++;
+                  }
+                  if(!bluffed)
+                  {
+                      cout << "A was telling the truth! B must add all of the discard pile to their hand. \n";
+                     while(!discardPile.empty())
+                     {
+                        hand2.addCard(discardPile.back());
+                        discardPile.pop_back();
+                     }
+                  }
+                  round++;
+                  break;
+               }
+               else
+               {
+                  cout << "B claims they have " << bPlay.getNumCards() << " " << bPlay.getCardType()<< "'s; \n";
+               }
+               
+            } else {
+               if(bPlay.getClaim() && !firstRound)
+               {
+                  // cout << "B doubts it!\n";
+                  
+                  uint i = 0;
+                  // bool bluffed = false;
+                  while(i < oppDiscs.size() && !bluffed)
+                  {
+                     if(oppDiscs[i].getNumber() != cPlay.getCardType())
+                     {
+                        bluffed = true;
+                        // cout << "A was bluffing! A must add all of the discard pile to their hand. \n";
+                        while(!discardPile.empty())
+                        {
+                           hand1.addCard(discardPile.back());
+                           discardPile.pop_back();
+                        }
+                        break;
+                     }
+                     i++;
+                  }
+                  if(!bluffed)
+                  {
+                      // cout << "A was telling the truth! B must add all of the discard pile to their hand. \n";
+                     while(!discardPile.empty())
+                     {
+                        hand2.addCard(discardPile.back());
+                        discardPile.pop_back();
+                     }
+                  }
+                  round++;
+                  break;
+               }
+               else
+               {
+                  // cout << "B claims they have " << bPlay.getNumCards() << " " << bPlay.getCardType()<< "'s; \n";
+               }
+               
             }
+            
+            if(hand2.getHandSize() == 1)
+            {
+               hand2.removeCard(0);
+               // match.updateStats(1, hand2.getHandSize(), bluffed);
+            }
+            if(tempDiscs.size() > 0)
+            {
+               for(int i = 0; i < hand2.getHandSize(); i++)
+               {
+                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  {
+                     if(hand2.getCard(i).equal(tempDiscs[j]))
+                     {
+                        discardPile.push_back(tempDiscs[j]);
+                        hand2.removeCard(i);
+                     }
+                  }
+                  
+               }
+			   for(uint j = 0; j < tempDiscs.size(); j++)
+			   {
+				 if(tempDiscs[j].getNumber() != bPlay.getCardType())
+				 {
+					bluffed = true;
+					for(int i = 0; i < hand2.getHandSize(); i++)
+					{
+						if(hand2.getCard(i).equal(tempDiscs[j]))
+						{
+							discardPile.push_back(tempDiscs[j]);
+							hand2.removeCard(i);
+						}
+					}                        
+				}
+			  }
+               if(bluffed)
+               {
+                  match.updateStats(1, hand2.getHandSize(), true);
+               }
+            }
+            round++;
+            break;
          }
-         else
+         case 2: // if player C is playing
          {
-            match.takeWicket();
+            cPlay = (*agent3)(hand3, bPlay, iter, discardPile.size(), handSizes, match);
+            vector<Card> oppDiscs = bPlay.getDiscards();
+            vector<Card> tempDiscs = cPlay.getDiscards();
+            
             if (printAllDetails)
             {
-               cout << "is out.\n";
+               if(cPlay.getClaim() && !firstRound)
+               {
+                  cout << "C doubts it!\n";
+                  
+                  uint i = 0;
+                  // bool bluffed = false;
+                  while(i < oppDiscs.size() && !bluffed)
+                  {
+                     if(oppDiscs[i].getNumber() != bPlay.getCardType())
+                     {
+                        bluffed = true;
+                        cout << "B was bluffing! B must add all of the discard pile to their hand. \n";
+                        while(!discardPile.empty())
+                        {
+                           hand2.addCard(discardPile.back());
+                           discardPile.pop_back();
+                        }
+                        break;
+                     }
+                     i++;
+                  }
+                  if(!bluffed)
+                  {
+                      cout << "B was telling the truth! C must add all of the discard pile to their hand. \n";
+                     while(!discardPile.empty())
+                     {
+                        hand3.addCard(discardPile.back());
+                        discardPile.pop_back();
+                     }
+                  }
+                  round = 0;
+                  break;
+               }
+               else
+               {
+                 cout << "C claims they have " << cPlay.getNumCards() << " " << cPlay.getCardType()<< "'s; \n";
+               }
+               
+            } else {
+               if(cPlay.getClaim() && !firstRound)
+               {
+                  // cout << "C doubts it!\n";
+                  
+                  uint i = 0;
+                  // bool bluffed = false;
+                  while(i < oppDiscs.size() && !bluffed)
+                  {
+                     if(oppDiscs[i].getNumber() != bPlay.getCardType())
+                     {
+                        bluffed = true;
+                        // cout << "B was bluffing! B must add all of the discard pile to their hand. \n";
+                        while(!discardPile.empty())
+                        {
+                           hand2.addCard(discardPile.back());
+                           discardPile.pop_back();
+                        }
+                        break;
+                     }
+                     i++;
+                  }
+                  if(!bluffed)
+                  {
+                      // cout << "B was telling the truth! C must add all of the discard pile to their hand. \n";
+                     while(!discardPile.empty())
+                     {
+                        hand3.addCard(discardPile.back());
+                        discardPile.pop_back();
+                     }
+                  }
+                  round = 0;
+                  break;
+               }
+               else
+               {
+                 // cout << "C claims they have " << cPlay.getNumCards() << " " << cPlay.getCardType()<< "'s; \n";
+               }
             }
-         }
-      }
-      if (!match.isInFirstInnings() && match.getBalls(1) == 0)
-      {
-         battingAgent = agentB;
-         bowlingAgent = agentA;
-         tempHand = battingHand;
-         battingHand = bowlingHand;
-         bowlingHand = tempHand;
-      } */
-   }
+            if(hand3.getHandSize() == 1)
+            {
+               hand3.removeCard(0);
+               // match.updateStats(2, hand3.getHandSize(), bluffed);
+            }
+            if(tempDiscs.size() > 0)
+            {
+               for(int i = 0; i < hand3.getHandSize(); i++)
+               {
+                  for(uint j = 0; j < tempDiscs.size(); j++)
+                  {
+					 if(hand3.getCard(i).equal(tempDiscs[j]))
+                     {
+                        discardPile.push_back(tempDiscs[j]);
+                        hand3.removeCard(i);
+                     }
+                  }
+                  
+               }
+			   for(uint j = 0; j < tempDiscs.size(); j++)
+			   {
+				 if(tempDiscs[j].getNumber() != cPlay.getCardType())
+				 {
+					bluffed = true;
+					for(int i = 0; i < hand3.getHandSize(); i++)
+					{
+						if(hand3.getCard(i).equal(tempDiscs[j]))
+						{
+							discardPile.push_back(tempDiscs[j]);
+							hand3.removeCard(i);
+						}
+					}                        
+				}
+			  }
+               if(bluffed)
+               {
+                  match.updateStats(2, hand3.getHandSize(), true);
+               }
+            }
+			round = 0;
+            break;
+		} 
+       }
+	  bluffed = false;
+      match.updateStats(0, hand1.getHandSize(), bluffed);
+      match.updateStats(1, hand2.getHandSize(), bluffed);
+      match.updateStats(2, hand3.getHandSize(), bluffed);
+	  handSizes[0] = hand1.getHandSize();
+	  handSizes[1] = hand2.getHandSize();
+      handSizes[2] = hand3.getHandSize();
+      iter++;
+      hand1.removeDumbCard();
+      hand2.removeDumbCard();
+      hand3.removeDumbCard();
+	  
+    }
 
    return match;
 }

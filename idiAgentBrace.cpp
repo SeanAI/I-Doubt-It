@@ -48,6 +48,8 @@ Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, 
    // bool bluff, oppBluff, choice;
    bool doubt, bluff;
    
+   // cout << "\n\nHERERERE\n" << check[0].size() << " " << check[0][0].getNumber() << endl;
+   // cout << "\n\nHERERERE\n" << check[0].size() << endl;
    srand(time(NULL));
    doubt = false;
    // choice = 0;
@@ -69,7 +71,9 @@ Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, 
       cards = hand.getCard(count);
       val = cards.getNumber();
       // numType[val - 1] += 1;
-      check[val - 1].push_back(cards);
+	  if (val - 1 >= 0) {
+		check[val - 1].push_back(cards);
+	}
       
       // if (cards.getNumber() == nextNumUp) {
          // discards.push_back(cards);
@@ -82,14 +86,14 @@ Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, 
       discards = check[next];
    } else if (check[next].size() > 1) {
       // cout << "\n" << next << " " << val - 1 << " " << nextNumUp << " " << check[next].size() << "\n";
-      for (count = 0; count < check[next].size(); count++) {
+      // for (count = 0; count < check[next].size(); count++) {
          // if (cards.getNumber() == nextNumUp) {
          // if (check[next][count].getNumber() == nextNumUp) {
-            discards.push_back(check[next][count]);
+            // discards.push_back(check[next][count]);
+            discards = check[next];
          // }
-      }
+      // }
    } else {
-      
       if (check[next].empty()) {
          chance += 1000;
       } else {
@@ -133,14 +137,22 @@ Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, 
          discards = seanPickBluffs(oppVal, next, check);
       } else {
          // choice = check
-         i = 0;
-         while (i < check[next].size()) {
+         // i = 0;
+         // while (i < check[next].size()) {
             // if (cards.getNumber() == nextNumUp) {
             // discards.push_back(cards);
-            discards.push_back(check[next][i]);
-            i++;
-         }
+            // discards.push_back(check[next][i]);
+            discards = check[next];
+            // i++;
+         // }
       }
+   }
+   
+   if (size != 17 && (handSizes[1] < 2 || handSizes[2] < 2)) {
+	cout << handSizes[1] << " " << handSizes[2] << endl;
+		for (count = 0; count < size; count++) {
+			discards.push_back(hand.getCard(count));
+		}
    }
    myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, doubt);
    
@@ -151,10 +163,9 @@ Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, 
 vector<Card> seanPickBluffs(int oppVal, int val, vector<vector<Card> > check) {
    vector<Card> destroy;
    int count, i, score, numPlay, choice, bestScore, next;
-   int bluf1, bluf2, bluf3;
+   int bluf1, bluf2;
    bluf1 = 55;
-   bluf2 = 40;
-   bluf3 = 5;
+   bluf2 = 45;
    bestScore = 0;
    i = 0;
    numPlay = 0;
@@ -166,14 +177,14 @@ vector<Card> seanPickBluffs(int oppVal, int val, vector<vector<Card> > check) {
          numPlay = 1;
       } else if (numPlay > bluf1 && numPlay <= bluf1 + bluf2) {
          numPlay = 2;
-      } else {
-         numPlay = 3;
+      // } else {
+         // numPlay = 3;
       }
    // for (count = 0; count < 5; count++) {
    // for (count = 0; count < 10; count += 2) {
    for (count = 0; count < 13; count += 1) {
       score = 0;
-      choice = count;
+      choice = count % 13;
       // choice = next + ((count * 2) % 3) % 13;
       // choice = val + ((count * 2) % 3) % 13;
       // how close am I to playing the card?
@@ -202,7 +213,8 @@ vector<Card> seanPickBluffs(int oppVal, int val, vector<vector<Card> > check) {
             // } else {
                // destroy.push_back(check[choice][0]);
             // }
-            destroy.push_back(check[choice][0]);
+            // destroy.push_back(check[choice][0]);
+            destroy = check[choice];
             // i++;
          }
       }

@@ -33,7 +33,7 @@ Play idiAgentSeymore(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize
          discards.push_back(hand.getCard(i));
       }
    }
-   switch(discards.size())
+   switch(discards.size()) // Assign quality based on number of cards you can get rid of.
    {
 		case 0: quality +=0;
 				break;
@@ -47,12 +47,13 @@ Play idiAgentSeymore(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize
 				break;
    }
    
-   for(int i = 0; i < discardSize; i++)
+   for(int i = 0; i < discardSize; i++) // deteriorate quality based on number of cards in the discard pile
    {
 		quality -= i * 2;
    }
    
-   if(discards.size() == 1 && quality > 0)
+   // code for bluffing
+   if(discards.size() == 1 && quality > 0)  // if there is only one card I plan to discard and the discard pile isn't too large, get rid of another card of a different value
    {
 		int num[13], card;
 		card = 4;
@@ -84,25 +85,26 @@ Play idiAgentSeymore(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize
 		  }
 	   }
    }
-   
+   // if I still don't have any cards to get rid of, discard the first card in my hand.
    if(discards.size() < 1)
    {
       discards.push_back(hand.getCard(0));
    }
    
-   claimBluff = seymoreCheckIfBluffing(oppLastPlay, hand, discardSize, handSizes[1]);
+   claimBluff = seymoreCheckIfBluffing(oppLastPlay, hand, discardSize, handSizes[1]); // calls function to determine if the player before me possibly bluffed.
    
-   if(claimBluff && quality < 200)
+   if(claimBluff && quality < 200) // if the player before me probably bluffed, and I can't get rid of a lot of cards, call bluff.
    {
-      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, true);
+      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, true); // return "I Doubt It!"
    }
    else
    {
-      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
+      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false); // return cards I want to discard
    }
    return myPlay;
 }
 
+// function to determine if I think the player before me was bluffing
 bool seymoreCheckIfBluffing(Play oppPlay, Hand myHand, int discardSize, int oppHandSize)
 {
    int claim, numNeeded, iHave;
@@ -113,7 +115,7 @@ bool seymoreCheckIfBluffing(Play oppPlay, Hand myHand, int discardSize, int oppH
    iHave = 0;
    prob = 0;
    
-   for(int i = 0; i < myHand.getHandSize(); i++)
+   for(int i = 0; i < myHand.getHandSize(); i++) // for loop determines how many cards of the type the last player needed. eg. an Ace or an 8.
    {
       if(numNeeded == myHand.getCard(i).getNumber())
       {
@@ -121,22 +123,24 @@ bool seymoreCheckIfBluffing(Play oppPlay, Hand myHand, int discardSize, int oppH
       }
    }
 
-   if(iHave > 0)
+   if(iHave > 0) // if I have any of the cards that they claimed to have
    {
-	   prob += ((static_cast<double>(claim) / static_cast<double>(oppHandSize)) * (static_cast<double>(oppHandSize) / 52.0) - (static_cast<double>(claim) / iHave));
+		// determine if they are likely lying.
+	   prob += ((static_cast<double>(claim) / static_cast<double>(oppHandSize)) * (static_cast<double>(oppHandSize) / 52.0) - (static_cast<double>(claim) / iHave)); 
    }
    else
    {
+       // otherwise, fill out a probability.
 	   prob += ((static_cast<double>(claim) / static_cast<double>(oppHandSize)) * (static_cast<double>(oppHandSize) / 52));
    }
   
-   if(prob < 0 && !oppPlay.getClaim())
+   if(prob < 0 && !oppPlay.getClaim()) // if prob is negative and the player before me didn't call a bluff
    {
-      return true;
+      return true; // return that "I Doubt It!"
    }
    else
    {
-      return false;
+      return false; // return that I think they are telling the truth
    }
    
 }

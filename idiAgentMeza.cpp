@@ -26,8 +26,10 @@
 #include "iostream"
 
 bool callOutBluff(Play oppPlay, Hand myHand, int discardSize, int oppPlaySize);
+//global
+int choice = 0;
 // Rename and complete this agent function.
-Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPileSize, int handSize[], const MatchState &match)
+Play idiAgentMeza(Hand hand, Play currentPlay, int nextNumUp, int discardPileSize, int handSize[], const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -287,7 +289,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 		}
    }
 	
-   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, callOutBluff(lastBowledCard, hand, discardPileSize, lastBowledCard.getNumCards()));
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, callOutBluff(currentPlay, hand, discardPileSize, currentPlay.getNumCards()));
    return myPlay;
    
 }
@@ -310,18 +312,17 @@ bool callOutBluff(Play oppPlay, Hand myHand, int discardSize, int oppPlaySize){
 				bluff++;
 			}
 		}
-		if (oppPlay.getClaim())
+		if (oppPlay.getClaim() || choice == 1)
 		{
+			choice = 0;
 			return false;
 		}
-		if (oppPlaySize > 2)
+		if (choice == 0 && oppPlaySize > 2)//((oppPlaySize > 2 && myHand.getHandSize() < 10) || (bluff >= 1 && myHand.getHandSize() > 10)))
 		{
+			choice = 1;
 			return true;
 		}
-		if (bluff >= 1)
-		{
-			return true;
-		}
+		//if (choice == 0 && bluff 
 		else{
 			return false;
 		}

@@ -54,7 +54,6 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
    int queens = 0;
    int kings = 0;
 
-   
    if(hand.getHandSize() >= 10)
    {
 	   for (int i = 0; i < hand.getHandSize(); i++)
@@ -121,7 +120,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 				}
 		   }
 	   }
-	   if (aces >= 2 && aces <= 4)
+	   if (aces >= 1 && aces < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -132,7 +131,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			aces = 0;
 	   }
-	   else if (twos >= 2 && twos <= 4)
+	   else if (twos >= 1 && twos < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -143,7 +142,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			twos = 0;
 	   }
-	   else if (threes >= 2 && threes <= 4)
+	   else if (threes >= 1 && threes < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -154,7 +153,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			threes = 0;
 	   }
-	   else if (fours >= 2 && fours <= 4)
+	   else if (fours >= 1 && fours < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -165,7 +164,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			fours = 0;
 	   }
-	   else if (fives >= 2 && fives <= 4)
+	   else if (fives >= 1 && fives < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -176,7 +175,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			fives = 0;
 	   }
-	   else if (sixes >= 2 && sixes <= 4)
+	   else if (sixes >= 1 && sixes < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -187,7 +186,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			sixes = 0;
 	   }
-	   else if (sevens >= 2 && sevens <= 4)
+	   else if (sevens >= 1 && sevens < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -198,7 +197,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			sevens = 0;
 	   }
-	   else if (eights >= 2 && eights <= 4)
+	   else if (eights >= 1 && eights < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -209,7 +208,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			eights = 0;
 	   }
-	   else if (nines >= 2 && nines <= 4)
+	   else if (nines >= 1 && nines < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -220,7 +219,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			nines = 0;
 	   }
-	   else if (tens >= 2 && tens <= 4)
+	   else if (tens >= 1 && tens < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -231,7 +230,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			tens = 0;
 	   }
-	   else if (jacks >= 2 && jacks <= 4)
+	   else if (jacks >= 1 && jacks < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -242,7 +241,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			jacks = 0;
 	   }
-	   else if (queens >= 2 && queens <= 4)
+	   else if (queens >= 1 && queens < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -253,7 +252,7 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 			}
 			queens = 0;
 	   }
-	   else if (kings >= 2 && kings <= 4)
+	   else if (kings >= 1 && kings < 3)
 	   {
 		   for(int k = 0; k < hand.getHandSize(); k++)
 			{
@@ -269,23 +268,38 @@ Play idiAgentMeza(Hand hand, Play lastBowledCard, int nextNumUp, int discardPile
 				discards.push_back(hand.getCard(0));
 		}
    }
-   
-   //Wanted to try and get the agent to see what cards have a similar suit.
-   // If it has alot of a certain number, then it will choose to discard that 
-   // entire stack of numbers it has
-   /* This way the agent does not lie as much*/
-   
-   // if opponent plays 2 cards, then the agent may or may not call them out. If it exceeds
-   // 3 cards, then the agent will definitely call them out. Otherwise, the agent will not
-   // call the other agent out.
+   else {
+		if (hand.getHandSize() >= 5 && hand.getHandSize() < 10)
+		{
+			discards.push_back(hand.getCard(0));
+			discards.push_back(hand.getCard(1));
+		}
+		else if (hand.getHandSize() <= 4 && hand.getHandSize() >= 1)
+		{
+			for (int i = 0; i < hand.getHandSize(); i++)
+			{
+				discards.push_back(hand.getCard(i));
+			}
+		}
+		else if (hand.getHandSize() < 1)
+		{
+			discards.push_back(hand.getCard(0));
+		}
+   }
 	
-   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
+   myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, callOutBluff(lastBowledCard, hand, discardPileSize, lastBowledCard.getNumCards()));
    return myPlay;
    
 }
+//determines whether or not to call a bluff on someone
+/* Mostly determined by if an opponent claims more than 2 cards or claims a card that I also have*/
+//If neither of these qualifications are met, then the agent will not call out a bluff
+//As well, it will not call out a bluff if the person before it claimed a bluff because that would not make any sense since 
+//they did not play a card
 bool callOutBluff(Play oppPlay, Hand myHand, int discardSize, int oppPlaySize){
 	int selectedCards, bluff;
 	
+	//local variables
 	selectedCards = oppPlay.getCardType();
 	bluff = 0;
 	

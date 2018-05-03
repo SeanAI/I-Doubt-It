@@ -24,7 +24,7 @@ const int numSuits = 4;
 enum cardSuit {spades, clubs, hearts, diamonds};
 
 // Type to keep track of the result of one cricket match.
-enum matchResult {aWin, bWin, unfinished};
+enum matchResult {aWin, bWin, cWin, unfinished};
 
 // Keeps track of one card used in the game.
 class Card
@@ -37,10 +37,21 @@ public:
    Card(int numCard, cardSuit suitCard)
    {
       makeCard(numCard, suitCard);
-   };
-   Card();
+   }
+   Card() {};
    int getNumber() const {return number;}
    cardSuit getSuit() const {return suit;}
+   bool equal(Card card2)
+   {
+      if(getSuit() == card2.getSuit() && getNumber() == card2.getNumber())
+      {
+         return true;
+      }
+      else 
+      {
+         return false;
+      }
+   }
    void makeCard(int cardNum, cardSuit cardSuit) 
    {
 	   number = cardNum; 
@@ -58,29 +69,51 @@ class Deck
 	
 	void build()
 	{
-		for(int i = 0; i < 4; i++)
+		for(int i = 1; i <= 4; i++)
 		{
-			for(int j = 1; j < 14; j++)
+			for(int j = 1; j <= 13; j++)
 			{
 				switch(i)
 				{
-					case 0: deckOCards.push_back(Card(j, spades));
+					case 1: deckOCards.push_back(Card(j, spades));
 							break;
-					case 1: deckOCards.push_back(Card(j, clubs));
+					case 2: deckOCards.push_back(Card(j, clubs));
 							break;
-					case 2: deckOCards.push_back(Card(j, hearts));
+					case 3: deckOCards.push_back(Card(j, hearts));
 							break;
-					case 3: deckOCards.push_back(Card(j, diamonds));
+					case 4: deckOCards.push_back(Card(j, diamonds));
 							break;
 				}
 			}
 		}
 	}
-   
-   void removeCard(int n, Deck &cards) {
-      cards.erase(deckOCards.begin() + n);
+	int getDeckSize()
+	{
+		return deckOCards.size();
+	}
+   void removeDumbCard()
+   {
+      for(uint i = 0; i < deckOCards.size(); i++)
+      {
+         if(deckOCards[i].getNumber() == 0)
+         {
+            deckOCards.erase(deckOCards.begin() + i);
+         }
+      }
    }
-   
+	void shuffle() 
+	{
+		Card temp;
+		int randomInt(52);
+        int p = randomInt;
+		for(int i = 51; i > 0; i--)
+		{
+			temp = deckOCards[i];
+			deckOCards[i] = deckOCards[p];
+         deckOCards[p] = temp;
+		}
+	}
+	
    Card deal() {
       int n;
       Card card;
@@ -88,23 +121,14 @@ class Deck
       n = random() % deckOCards.size();
       
       card = deckOCards[n];
-      removeCard(n);
+      deckOCards.erase(deckOCards.begin() + n);
       
       return card;
    }
-   
-	void shuffle()
-	{
-		Card temp;
-		int randomInt(52);
-      int p = randomInt;
-		for(int i = 51; i > 0; i--)
-		{
-			Card temp = deckOCards[i];
-			deckOCards[i] = deckOCards[p];
-         deckOCards[p] = temp;
-		}
-	}
+   Card getLastCard()
+   {
+	   return deckOCards[0];
+   }
 	
 };
 // Keeps track of one player's hand of cards.
@@ -114,35 +138,47 @@ private:
    vector<Card> cards;
 public:
    Hand();
-	void buildHand()
-	{
-		for(int i = 0; i < 4; i++)
-		{
-			for(int j = 1; j < 14; j++)
-			{
-				switch(i)
-				{
-					// case 0: cards.push_back(Card(j, spades));
-					case 0: cards.push_back());
-							break;
-					case 1: cards.push_back(Card(j, clubs));
-							break;
-					case 2: cards.push_back(Card(j, hearts));
-							break;
-					case 3: cards.push_back(Card(j, diamonds));
-							break;
-				}
-			}
-		}
-	}
    Card getCard(uint which) const 
    {
       Card errorCard;
-      if(which > 0 && which <= cards.size())
+      if(which >= 0 && which < cards.size())
          return cards[which];
       else
          return errorCard;
    }
+   void removeCard(uint which)
+   {
+	   Card removedCard;
+      
+     if(cards.size() == 1)
+      {
+         cards.pop_back();
+      }
+      else if(which >= 0 && which < cards.size())
+	  {
+		  removedCard = cards[which];
+		  cards.erase(cards.begin() + which);
+	  } 
+   }
+   int getHandSize()
+   {
+	   return cards.size();
+   }
+   void addCard(Card add)
+   {
+	   cards.push_back(add);
+   }
+   void removeDumbCard()
+   {
+      for(uint i = 0; i < cards.size(); i++)
+      {
+         if(cards[i].getNumber() == 0)
+         {
+            cards.erase(cards.begin() + i);
+         }
+      }
+   }
+   
    string toString() const;
 };
 
@@ -153,22 +189,24 @@ struct IDIStats
    int bluffs;
    
    IDIStats() {cardsPossessed = 0; bluffs = 0;}
+   void updateBluffs() {
+      bluffs += 1;
+   }
 };
 
 class Play
 {
    private:
-   int numOfCardsPlayed;
+   int numOfCardsPlayed, cardType;
    vector<Card> discards;
    bool claimBluff;
    
    public:
-      Play() {
-         cout << "\nHELLO THERE\n";
-      }
-      void setCardsPlayed(int num, vector<Card> dis, bool dou)
+      Play();
+      void setCardsPlayed(int num, int type, vector<Card> dis, bool dou)
       {
          numOfCardsPlayed = num;
+         cardType = type;
          discards = dis;
          claimBluff = dou;
          return;
@@ -176,6 +214,10 @@ class Play
       int getNumCards()
       {
          return numOfCardsPlayed;
+      }
+      int getCardType()
+      {
+         return cardType;
       }
       vector<Card> getDiscards()
       {
@@ -195,7 +237,11 @@ private:
    void checkForResult();
 public:
    MatchState();
+   int getResult() const {return result;}
+   IDIStats getStats(int which) {return stats[which];}
    bool stillPlaying() const {return result == unfinished;}
+   void updateStats(int agent, int as, bool bluff);
+   // void updateStates(int agent, bool bluff);
 };
 
 #endif // #ifndef CCG_H

@@ -24,9 +24,9 @@
 #include "idi.h"
 #include "math.h"
 #include "iostream"
-
+bool braceCheckIfBluffing(Play oppPlay, Hand myHand, int discardSize, int oppHandSize);
 // Rename and complete this agent function.
-Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchState &match)
+Play idiAgentBrace(Hand hand, Play oppLastPlay, int nextNumUp, int discardSize, int handSizes[],  const MatchState &match)
 {
    // Your function must end up returning a valid int between 0 and numCardsPerHand - 1.
    // No random-number generation allowed!
@@ -37,11 +37,71 @@ Play idiAgentBrace(Hand hand, Card lastBowledCard, bool isBatting, const MatchSt
    // numRuns(d) gives the number of runs scored when the card difference is d.
    // See the definitions of Hand, Card and MatchState for more helpful functions.
 
-   Play myPlay;
+Play myPlay;
    vector<Card> discards;
-   myPlay.setCardsPlayed(2, discards, false);
+   bool claimBluff;
+   
+   for(int i = 0; i < hand.getHandSize(); i++)
+   {
+      if(hand.getCard(i).getNumber() == nextNumUp)
+      {
+         discards.push_back(hand.getCard(i));
+      }
+   }
+   if(discards.empty())
+   {
+      discards.push_back(hand.getCard(0));
+   }
+   claimBluff = braceCheckIfBluffing(oppLastPlay, hand, discardSize, handSizes[1]);
+   if(claimBluff)
+   {
+      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, true);
+   }
+   else
+   {
+      myPlay.setCardsPlayed(discards.size(), nextNumUp, discards, false);
+   }
    return myPlay;
 }
+
+bool braceCheckIfBluffing(Play oppPlay, Hand myHand, int discardSize, int oppHandSize)
+{
+   int claim, numNeeded, iHave;
+   double prob;
+   
+   claim = oppPlay.getNumCards();
+   numNeeded = oppPlay.getCardType();
+   iHave = 0;
+   prob = 0.3;
+   
+   for(int i = 0; i < myHand.getHandSize(); i++)
+   {
+      if(numNeeded == myHand.getCard(i).getNumber())
+      {
+         iHave++;
+      }
+   }
+
+   if(iHave > 0)
+   {
+	   prob += ((static_cast<double>(claim) / static_cast<double>(oppHandSize)) - (static_cast<double>(claim) / iHave));
+   }
+   else
+   {
+	   prob += ((static_cast<double>(claim) / static_cast<double>(oppHandSize)) * (static_cast<double>(oppHandSize) / 52));
+   }
+   
+   if(prob < 0 && !oppPlay.getClaim())
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+   
+}
+
 
 /*
 

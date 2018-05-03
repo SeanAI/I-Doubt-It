@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # CS 4318, spring 2018
-# Agent Challenge 4: Cricket card game
+# Final Project: I Doubt It card game
 
 challenge='idi'
-funcSignature='int _(Hand, Play, const MatchState &)'
+funcSignature='int _(Hand, Play, int, int, int[], const MatchState &)'
 funcNames=''
 objectFiles=''
 declare -i numAgents
